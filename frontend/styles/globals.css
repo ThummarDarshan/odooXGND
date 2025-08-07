@@ -1,0 +1,183 @@
+/* --------------------------------------------------------------------
+   Global Style Sheet
+   – loads Tailwind first, then any extra libraries & custom rules
+---------------------------------------------------------------------*/
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* --------------------------------------------------------------------
+   Theme tokens (OKLCH)  — light & dark palettes
+---------------------------------------------------------------------*/
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* neutral surface / text */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+
+  /* element colours */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+
+  /* brand colours */
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+
+  /* utility colours */
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+
+  /* feedback colours */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+
+  /* strokes / focus */
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+
+  /* chart colours */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  /* sizing */
+  --radius: 0.625rem;
+
+  /* sidebar colours */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: #181A20;
+  --foreground: #F1F1F1;
+  --card: #23262F;
+  --card-foreground: #F1F1F1;
+  --popover: #23262F;
+  --popover-foreground: #F1F1F1;
+  --primary: #3B82F6;
+  --primary-foreground: #181A20;
+  --secondary: #23262F;
+  --secondary-foreground: #F1F1F1;
+  --muted: #23262F;
+  --muted-foreground: #A3A6AD;
+  --accent: #8B5CF6;
+  --accent-foreground: #F1F1F1;
+  --destructive: #EF4444;
+  --destructive-foreground: #F1F1F1;
+  --border: #23262F;
+  --input: #23262F;
+  --ring: #3B82F6;
+  --chart-1: #3B82F6;
+  --chart-2: #8B5CF6;
+  --chart-3: #06B6D4;
+  --chart-4: #10B981;
+  --chart-5: #F59E42;
+  --sidebar: #23262F;
+  --sidebar-foreground: #F1F1F1;
+  --sidebar-primary: #3B82F6;
+  --sidebar-primary-foreground: #F1F1F1;
+  --sidebar-accent: #8B5CF6;
+  --sidebar-accent-foreground: #F1F1F1;
+  --sidebar-border: #23262F;
+  --sidebar-ring: #3B82F6;
+}
+
+/* --------------------------------------------------------------------
+   Theme tokens for inline styles
+---------------------------------------------------------------------*/
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* --------------------------------------------------------------------
+   Base layer   —   keep things simple to avoid “unknown utility” errors
+---------------------------------------------------------------------*/
+@layer base {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: theme(fontFamily.sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* --------------------------------------------------------------------
+   Extra helpers (example animation used by the hero gradient text)
+---------------------------------------------------------------------*/
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Utility class applied by <HeroSection /> */
+.animate-gradient-flow {
+  animation: gradient-flow 6s ease infinite;
+  background-size: 200% 200%;
+}

@@ -1,0 +1,315 @@
+"use client"
+
+import * as React from "react"
+import { Search, LogIn, UserPlus, Menu, Home, Info, User, Bell, Shield } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { NotificationDropdown } from "./notification-dropdown"
+import { useTheme } from "next-themes";
+import { Switch } from "@/components/ui/switch";
+
+export function Navigation() {
+  const [isOpen, setIsOpen] = React.useState(false)
+  const [notificationKey, setNotificationKey] = React.useState(0)
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [userRole, setUserRole] = React.useState<string | null>(null);
+  const [hasMounted, setHasMounted] = React.useState(false);
+  const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
+
+  React.useEffect(() => {
+    setHasMounted(true);
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+    
+    // Get user role if logged in
+    if (token) {
+      const user = localStorage.getItem('user');
+      if (user) {
+        try {
+          const userData = JSON.parse(user);
+          setUserRole(userData.role);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
+      }
+    }
+    
+    const handleStorage = () => {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+      if (token) {
+        const user = localStorage.getItem('user');
+        if (user) {
+          try {
+            const userData = JSON.parse(user);
+            setUserRole(userData.role);
+          } catch (error) {
+            console.error('Error parsing user data:', error);
+          }
+        }
+      } else {
+        setUserRole(null);
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setIsLoggedIn(false);
+      if (router) router.push('/');
+      else window.location.href = '/';
+    }
+  };
+
+  // Force re-render of notification dropdown when notifications change
+  const handleNotificationChange = () => {
+    setNotificationKey(prev => prev + 1);
+  };
+
+  return (
+    <nav className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-xl border-b border-border shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <a
+              href="/"
+              className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+            >
+              NexaUI
+            </a>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <a
+              href="/"
+              className="text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 flex items-center space-x-2"
+            >
+              <Home className="h-4 w-4" />
+              <span>Home</span>
+            </a>
+            <a
+              href="/about"
+              className="text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 flex items-center space-x-2"
+            >
+              <Info className="h-4 w-4" />
+              <span>About</span>
+            </a>
+            {hasMounted && isLoggedIn && userRole === 'admin' && (
+              <a
+                href="/admin"
+                className="text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 flex items-center space-x-2"
+              >
+                <Shield className="h-4 w-4" />
+                <span>Admin</span>
+              </a>
+            )}
+          </div>
+
+          {/* Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-md mx-8">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="w-full pl-10 pr-4 py-2 bg-muted border-border focus:bg-background focus:border-blue-300 focus:ring-blue-200 rounded-lg"
+              />
+            </div>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            <NotificationDropdown key={notificationKey} onNotificationChange={handleNotificationChange} />
+            {/* Profile Icon */}
+            {hasMounted ? (
+              <button
+                onClick={() => {
+                  if (isLoggedIn) {
+                    window.location.href = '/profile';
+                  } else {
+                    window.location.href = '/login';
+                  }
+                }}
+                className="flex items-center justify-center rounded-full p-2 hover:bg-muted transition-colors"
+                title="Profile"
+                type="button"
+              >
+                <User className="h-5 w-5 text-foreground hover:text-blue-600" />
+              </button>
+            ) : null}
+            <div className="h-6 w-px bg-border mx-2"></div>
+            {hasMounted ? (
+              isLoggedIn ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-3 md:py-2 lg:px-4 lg:py-2 rounded-lg font-medium bg-background shadow-sm hover:shadow-md whitespace-nowrap min-w-fit"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-3 md:py-2 lg:px-4 lg:py-2 rounded-lg font-medium bg-background shadow-sm hover:shadow-md whitespace-nowrap min-w-fit"
+                    asChild
+                  >
+                    <a href="/login" className="flex items-center space-x-1.5">
+                      <LogIn className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm font-medium">Login</span>
+                    </a>
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-3 md:py-2 lg:px-4 lg:py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 whitespace-nowrap min-w-fit"
+                    asChild
+                  >
+                    <a href="/signup" className="flex items-center space-x-1.5">
+                      <UserPlus className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm font-medium">Sign Up</span>
+                    </a>
+                  </Button>
+                </>
+              )
+            ) : null}
+          </div>
+
+          {/* Mobile Menu */}
+          <div className="md:hidden">
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-2">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80 bg-background/95 backdrop-blur-xl">
+                <div className="flex flex-col space-y-6 mt-6">
+                  {/* Mobile Search */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder="Search..."
+                      className="w-full pl-10 pr-4 py-3 bg-muted border-border focus:bg-background focus:border-blue-300 focus:ring-blue-200 rounded-lg"
+                    />
+                  </div>
+
+                  {/* Mobile Navigation Links */}
+                  <div className="flex flex-col space-y-3">
+                    <a
+                      href="/"
+                      className="flex items-center space-x-3 text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-muted"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Home className="h-5 w-5" />
+                      <span>Home</span>
+                    </a>
+                    <a
+                      href="/about"
+                      className="flex items-center space-x-3 text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-muted"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Info className="h-5 w-5" />
+                      <span>About</span>
+                    </a>
+                    {hasMounted && isLoggedIn && userRole === 'admin' && (
+                      <a
+                        href="/admin"
+                        className="flex items-center space-x-3 text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-muted"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <Shield className="h-5 w-5" />
+                        <span>Admin</span>
+                      </a>
+                    )}
+                    <a
+                      href="/notifications"
+                      className="flex items-center space-x-3 text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-muted"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Bell className="h-5 w-5" />
+                      <span>Notifications</span>
+                    </a>
+                  </div>
+
+                  {/* Mobile Notification */}
+                  <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <span className="font-medium text-foreground">Notifications</span>
+                    <NotificationDropdown key={notificationKey} onNotificationChange={handleNotificationChange} />
+                  </div>
+
+                  {/* Mobile Auth Buttons */}
+                  <div className="flex flex-col space-y-3 pt-4 border-t border-border">
+                    {hasMounted ? (
+                      isLoggedIn ? (
+                        <Button
+                          variant="outline"
+                          className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
+                          onClick={() => { handleLogout(); setIsOpen(false); }}
+                        >
+                          Logout
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
+                            asChild
+                          >
+                            <a href="/login" className="flex items-center justify-center space-x-3">
+                              <LogIn className="h-4 w-4" />
+                              <span>Login</span>
+                            </a>
+                          </Button>
+                          <Button
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-4 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0"
+                            asChild
+                          >
+                            <a href="/signup" className="flex items-center justify-center space-x-3">
+                              <UserPlus className="h-4 w-4" />
+                              <span>Sign Up</span>
+                            </a>
+                          </Button>
+                        </>
+                      )
+                    ) : null}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return (
+    <div className="flex items-center space-x-2">
+      <span className="text-xs text-muted-foreground">🌞</span>
+      <Switch
+        checked={isDark}
+        onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+        aria-label="Toggle dark mode"
+      />
+      <span className="text-xs text-muted-foreground">🌙</span>
+    </div>
+  );
+}
