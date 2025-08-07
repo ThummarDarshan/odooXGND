@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # NexaUI - Full Stack Project
 
 A modern web application built with Next.js frontend, Node.js backend, and MySQL database.
@@ -156,3 +157,7 @@ For support or questions:
 - Create an issue in the repository
 - Email: support@nexaui.com
 - Documentation: Check individual README files in each folder 
+=======
+# NexaUI
+hackathon modules
+>>>>>>> 56ab65183a7d07d26e212af1a94d4b8b088345bb
