@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const passport = require('passport');
+const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +19,9 @@ const adminRoutes = require('./routes/admin');
 // Import database connection
 const db = require('./config/database');
 
+// Compression middleware for better performance
+app.use(compression());
+
 // Security middleware
 app.use(helmet());
 
@@ -27,11 +31,14 @@ app.use(cors({
   credentials: true
 }));
 
-// Rate limiting
+// Rate limiting with more lenient settings for better performance
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 200, // increased limit for better performance
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true // Don't count successful requests
 });
 app.use('/api/', limiter);
 

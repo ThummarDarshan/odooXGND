@@ -8,8 +8,14 @@ const dbConfig = {
   database: process.env.DB_NAME || 'nexaui_db',
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  connectionLimit: 20,
+  queueLimit: 0,
+  // MySQL2 compatible timeout options
+  acquireTimeoutMillis: 60000,
+  connectTimeout: 60000,
+  // Enable connection pooling optimization
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 };
 
 // Create connection pool

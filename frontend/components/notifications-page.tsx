@@ -149,6 +149,8 @@ export function NotificationsPage({ notifications: propNotifications, onNotifica
   const [loading, setLoading] = React.useState(false);
 
   const createSampleNotifications = async () => {
+    if (loading) return; // Prevent multiple clicks
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -173,8 +175,10 @@ export function NotificationsPage({ notifications: propNotifications, onNotifica
         if (onNotificationChange) {
           onNotificationChange();
         }
-        // Reload the page to show new notifications
-        window.location.reload();
+        // Refresh notifications by calling the parent callback
+        if (onNotificationChange) {
+          onNotificationChange();
+        }
       } else {
         const errorData = await res.json();
         throw new Error(errorData.error || "Failed to create sample notifications");
@@ -184,6 +188,8 @@ export function NotificationsPage({ notifications: propNotifications, onNotifica
         title: "Error creating sample notifications",
         description: err.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 

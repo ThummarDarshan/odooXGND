@@ -23,17 +23,52 @@ export function LoginPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check for token in URL (after Google OAuth)
+    // Check for token in URL (after OAuth)
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       const token = url.searchParams.get('token');
+      const error = url.searchParams.get('error');
+      
       if (token) {
         localStorage.setItem('token', token);
         // Optionally, fetch user info here using the token
         router.push('/');
       }
+      
+      // Handle OAuth errors
+      if (error) {
+        let errorMessage = 'An error occurred during authentication.';
+        
+        switch (error) {
+          case 'github_oauth_error':
+            errorMessage = 'GitHub OAuth authentication failed. Please try again or use email/password login.';
+            break;
+          case 'google_oauth_error':
+            errorMessage = 'Google OAuth authentication failed. Please try again or use email/password login.';
+            break;
+          case 'no_user':
+            errorMessage = 'No user account found. Please sign up first.';
+            break;
+          case 'jwt_error':
+            errorMessage = 'Authentication token error. Please try again.';
+            break;
+          default:
+            errorMessage = 'Authentication failed. Please try again.';
+        }
+        
+        toast({
+          title: "Authentication Error",
+          description: errorMessage,
+          variant: "destructive"
+        });
+        
+        // Clear the error from URL
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('error');
+        window.history.replaceState({}, '', newUrl.toString());
+      }
     }
-  }, [router]);
+  }, [router, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
