@@ -5,6 +5,7 @@
 CREATE DATABASE IF NOT EXISTS globetrotter_db;
 USE globetrotter_db;
 
+
 -- Users table
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
