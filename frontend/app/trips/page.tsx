@@ -1,73 +1,60 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { CalendarRange, MapPin, Eye, Pencil, Trash2, Plus } from "lucide-react";
+import { CalendarRange, MapPin, Eye, Pencil, Trash2 } from "lucide-react";
+import { decodeJWT } from "@/lib/jwt-decode";
+import { apiRequest } from "@/lib/api";
 
 interface Trip {
   id: number | string;
   name: string;
   start_date: string;
   end_date: string;
-  destinations?: string[]; // list of destination names
+  destinations?: string[];
   cover?: string;
+  updated_at?: string;
+  created_at?: string;
 }
 
-export default function TripsListPage() {
+export default function MyTripsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchTrips() {
+      setLoading(true);
+      setAuthError(null);
+      let userId;
       try {
-        setLoading(true);
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5001/api/trips", {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        }).catch(() => null);
-
-        if (!res || !res.ok) {
-          // Fallback demo data if backend not available
-          setTrips([
-            {
-              id: 1,
-              name: "Paris Getaway",
-              start_date: "2024-06-10",
-              end_date: "2024-06-18",
-              destinations: ["Paris"],
-              cover: "/placeholder.jpg",
-            },
-            {
-              id: 2,
-              name: "Japan Highlights",
-              start_date: "2024-07-05",
-              end_date: "2024-07-20",
-              destinations: ["Tokyo", "Kyoto", "Osaka"],
-              cover: "/placeholder.jpg",
-            },
-            {
-              id: 3,
-              name: "NYC & East Coast",
-              start_date: "2024-08-01",
-              end_date: "2024-08-10",
-              destinations: ["New York", "Boston"],
-              cover: "/placeholder.jpg",
-            },
-          ]);
-        } else {
-          const data = await res.json();
-          // Expecting an array of trips
-          setTrips(Array.isArray(data.trips) ? data.trips : data);
+        if (token) {
+          try {
+            const payload = decodeJWT(token);
+            userId = payload?.id || payload?.user_id || payload?.userId;
+          } catch {
+            // ignore decode errors, just don't set userId
+          }
         }
-      } catch (err) {
+        if (!userId) {
+          setAuthError("Could not determine user. Showing no trips.");
+          setTrips([]);
+          setLoading(false);
+          return;
+        }
+        // Fetch all trips for the user
+        const data = await apiRequest(`/trips/user/${userId}`);
+        setTrips(Array.isArray(data.trips) ? data.trips : data);
+      } catch (err: any) {
         setTrips([]);
+        setAuthError(err?.message || "Failed to fetch trips");
       } finally {
         setLoading(false);
       }
@@ -76,22 +63,11 @@ export default function TripsListPage() {
   }, []);
 
   const handleDelete = async (tripId: Trip["id"]) => {
-    const ok = confirm("Delete this trip?");
-    if (!ok) return;
-    const token = localStorage.getItem("token");
+    if (!confirm("Delete this trip?")) return;
     try {
-      const res = await fetch(`http://localhost:5001/api/trips/${tripId}`, {
-        method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      }).catch(() => null);
-      if (!res || !res.ok) {
-        // Optimistic remove in demo
-        setTrips(prev => prev.filter(t => t.id !== tripId));
-        toast({ title: "Deleted (demo)", description: "Removed trip locally." });
-        return;
-      }
-      setTrips(prev => prev.filter(t => t.id !== tripId));
-      toast({ title: "Trip deleted" });
+      await apiRequest(`/trips/${tripId}`, { method: "DELETE" });
+      setTrips((prev) => prev.filter((t) => t.id !== tripId));
+      toast({ title: "Trip deleted successfully." });
     } catch (err: any) {
       toast({ title: "Error", description: err?.message || "Failed to delete" });
     }
@@ -108,6 +84,13 @@ export default function TripsListPage() {
     }
   };
 
+  // Sort trips by updated_at descending (latest updated first)
+  const sortedTrips = [...trips].sort((a, b) => {
+    const aDate = new Date(a.updated_at || a.created_at || a.start_date);
+    const bDate = new Date(b.updated_at || b.created_at || b.start_date);
+    return bDate.getTime() - aDate.getTime();
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-950">
       <Navigation />
@@ -118,8 +101,7 @@ export default function TripsListPage() {
             <p className="text-slate-500 dark:text-slate-400">Access and manage your upcoming and past trips</p>
           </div>
           <Button onClick={() => router.push("/trips/create")} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Create Trip
+            + Add Trip
           </Button>
         </div>
 
@@ -127,19 +109,22 @@ export default function TripsListPage() {
           <div className="py-20 text-center text-slate-500">Loading trips...</div>
         ) : trips.length === 0 ? (
           <div className="py-20 text-center">
-            <p className="text-slate-600 dark:text-slate-400 mb-4">No trips yet.</p>
-            <Button onClick={() => router.push("/trips/create")}>Plan your first trip</Button>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">{authError ? authError : "No trips yet."}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trips.map((trip) => (
+            {sortedTrips.map((trip) => (
               <Card
                 key={trip.id}
                 className="overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col h-full"
               >
                 <div className="aspect-video bg-slate-200 dark:bg-slate-700">
                   {trip.cover ? (
-                    <img src={trip.cover} alt={trip.name} className="w-full h-full object-cover" />
+                    <img
+                      src={trip.cover.startsWith('http') ? trip.cover : `http://localhost:5001${trip.cover}`}
+                      alt={trip.name}
+                      className="w-full h-full object-cover"
+                    />
                   ) : null}
                 </div>
                 <CardHeader className="pb-2">
@@ -154,7 +139,9 @@ export default function TripsListPage() {
                     <MapPin className="h-4 w-4" />
                     <span>{trip.destinations?.length ?? 0} destinations</span>
                   </div>
-
+                  <div className="flex items-center gap-2 text-xs text-slate-400 mt-2">
+                    <span>Updated {trip.updated_at ? new Date(trip.updated_at).toLocaleString() : "never"}</span>
+                  </div>
                   <div className="mt-auto pt-4 flex items-center justify-end gap-2">
                     <Button
                       size="sm"

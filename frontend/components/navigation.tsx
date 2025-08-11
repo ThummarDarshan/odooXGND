@@ -95,7 +95,7 @@ export function Navigation() {
         router.push('/profile');
         break;
       case 'activity':
-        router.push('/notifications');
+        router.push('/activity-history'); // Changed from /notifications
         break;
       case 'settings':
         router.push('/settings');
@@ -130,20 +130,6 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="/"
-              className="text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 flex items-center space-x-2"
-            >
-              <Home className="h-4 w-4" />
-              <span>Home</span>
-            </a>
-            <a
-              href="/about"
-              className="text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 flex items-center space-x-2"
-            >
-              <Info className="h-4 w-4" />
-              <span>About</span>
-            </a>
             {hasMounted && isLoggedIn && userRole === 'admin' && (
               <a
                 href="/admin"
@@ -155,22 +141,8 @@ export function Navigation() {
             )}
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2 bg-muted border-border focus:bg-background focus:border-blue-300 focus:ring-blue-200 rounded-lg"
-              />
-            </div>
-          </div>
-
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-2">
-            {/* Theme Toggle */}
-            <ThemeToggle />
             <NotificationDropdown key={notificationKey} onNotificationChange={handleNotificationChange} />
             {/* Profile Icon with Dropdown */}
             {hasMounted ? (
@@ -228,7 +200,7 @@ export function Navigation() {
                 </button>
               )
             ) : null}
-            <div className="h-6 w-px bg-border mx-2"></div>
+            
             {hasMounted ? (
               isLoggedIn ? null : (
                 <>
@@ -255,7 +227,7 @@ export function Navigation() {
                   </Button>
                 </>
               )
-            ) : null}
+            ): null}
           </div>
 
           {/* Mobile Menu */}
@@ -268,34 +240,8 @@ export function Navigation() {
               </SheetTrigger>
               <SheetContent side="right" className="w-80 bg-background/95 backdrop-blur-xl">
                 <div className="flex flex-col space-y-6 mt-6">
-                  {/* Mobile Search */}
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search..."
-                      className="w-full pl-10 pr-4 py-3 bg-muted border-border focus:bg-background focus:border-blue-300 focus:ring-blue-200 rounded-lg"
-                    />
-                  </div>
-
                   {/* Mobile Navigation Links */}
                   <div className="flex flex-col space-y-3">
-                    <a
-                      href="/"
-                      className="flex items-center space-x-3 text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-muted"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Home className="h-5 w-5" />
-                      <span>Home</span>
-                    </a>
-                    <a
-                      href="/about"
-                      className="flex items-center space-x-3 text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-muted"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Info className="h-5 w-5" />
-                      <span>About</span>
-                    </a>
                     {hasMounted && isLoggedIn && userRole === 'admin' && (
                       <a
                         href="/admin"
@@ -346,7 +292,7 @@ export function Navigation() {
                           <Button
                             variant="outline"
                             className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
-                            onClick={() => { router.push('/notifications'); setIsOpen(false); }}
+                            onClick={() => { router.push('/activity-history'); setIsOpen(false); }}
                           >
                             <History className="mr-3 h-4 w-4" />
                             Activity History

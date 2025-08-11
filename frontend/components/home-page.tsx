@@ -3,19 +3,22 @@
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, Filter, SortAsc, MapPin, Calendar, Plane, Plus } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Search, Filter, SortAsc, MapPin, Calendar, Plane, Plus, User, SlidersHorizontal, Layers } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
 export function HomePage() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("Traveler");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
+    const name = localStorage.getItem('userName');
+    if (name) setUserName(name);
   }, []);
 
   const handlePlanTrip = () => {
@@ -26,7 +29,7 @@ export function HomePage() {
     }
   };
 
-  // Mock data for regional selections and previous trips
+  // Mock data
   const regionalSelections = [
     { id: 1, name: "Paris, France", image: "/placeholder.jpg", rating: 4.8 },
     { id: 2, name: "Tokyo, Japan", image: "/placeholder.jpg", rating: 4.9 },
@@ -34,7 +37,6 @@ export function HomePage() {
     { id: 4, name: "London, UK", image: "/placeholder.jpg", rating: 4.6 },
     { id: 5, name: "Rome, Italy", image: "/placeholder.jpg", rating: 4.8 }
   ];
-
   const previousTrips = [
     { id: 1, title: "Paris Adventure", date: "March 2024", destination: "Paris, France", image: "/placeholder.jpg" },
     { id: 2, title: "Tokyo Exploration", date: "February 2024", destination: "Tokyo, Japan", image: "/placeholder.jpg" },
@@ -43,106 +45,86 @@ export function HomePage() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-950">
-      {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col items-center w-full">
         <Navigation />
-        
-        {/* Banner Image Section */}
-        <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-r from-blue-600 to-purple-600 overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="relative h-full flex items-center justify-center">
-            <div className="text-center text-white z-10">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">Discover Your Next Adventure</h1>
-              <p className="text-xl md:text-2xl opacity-90">Explore the world with GlobalTrotter</p>
-            </div>
-          </div>
-          {/* Decorative elements */}
-          <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full"></div>
-          <div className="absolute bottom-20 right-20 w-32 h-32 bg-white/10 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full"></div>
-        </div>
-
-        {/* Search and Filtering Section */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              {/* Search Bar */}
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
-                <Input
-                  type="text"
-                  placeholder="Search destinations, hotels, activities..."
-                  className="pl-10 pr-4 py-3 text-lg border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-900"
-                />
-              </div>
-              
-              {/* Filter Buttons */}
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Group by
-                </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filter
-                </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <SortAsc className="h-4 w-4" />
-                  Sort by...
-                </Button>
-              </div>
+        {/* Banner Image */}
+        <div className="w-full flex justify-center mt-8">
+          <div className="relative w-full max-w-6xl h-56 md:h-72 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl shadow-xl flex items-center justify-center overflow-hidden animate-fade-in">
+            <img src="/globetrotter-logo.png" alt="Banner" className="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-black/30" />
+            <div className="relative z-10 flex flex-col items-center justify-center w-full">
+              <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-2 animate-slide-down text-center">Banner Image</h1>
+              <p className="text-lg md:text-xl text-white/90 mb-4 animate-fade-in text-center">Welcome to GlobalTrotter</p>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Top Regional Selections */}
-          <section className="mb-16">
-            <div className="flex items-center mb-8">
-              <div className="flex-1 h-px bg-slate-300 dark:bg-slate-600"></div>
-              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 px-6">
-                Top Regional Selections
-              </h2>
-              <div className="flex-1 h-px bg-slate-300 dark:bg-slate-600"></div>
+        {/* Search and Controls */}
+        <div className="w-full flex justify-center mt-6">
+          <div className="w-full max-w-6xl flex flex-col md:flex-row items-center gap-4 animate-fade-in">
+            <div className="relative flex-1 w-full">
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
+                <Search className="h-6 w-6" />
+              </span>
+              <Input
+                className="pl-14 pr-6 py-4 text-2xl font-normal rounded-full bg-white border border-slate-100 shadow-[0_4px_24px_0_rgba(30,41,59,0.08)] focus:ring-0 focus:border-slate-200 transition-all placeholder:text-slate-500 text-slate-600"
+                placeholder="Search bar ..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{ boxShadow: '0 4px 24px 0 rgba(30,41,59,0.08)' }}
+              />
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {regionalSelections.map((region) => (
-                <Card key={region.id} className="bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-shadow cursor-pointer group">
-                  <CardContent className="p-4">
-                    <div className="aspect-square bg-slate-200 dark:bg-slate-700 rounded-lg mb-3 overflow-hidden">
+            <div className="flex gap-2 w-full md:w-auto justify-end">
+              <Button variant="outline" className="flex items-center gap-2 rounded-full px-4 py-2 shadow-sm hover:bg-blue-50 dark:hover:bg-blue-900 transition-all animate-pop-in"><Layers className="h-4 w-4" /> Group by</Button>
+              <Button variant="outline" className="flex items-center gap-2 rounded-full px-4 py-2 shadow-sm hover:bg-blue-50 dark:hover:bg-blue-900 transition-all animate-pop-in"><SlidersHorizontal className="h-4 w-4" /> Filter</Button>
+              <Button variant="outline" className="flex items-center gap-2 rounded-full px-4 py-2 shadow-sm hover:bg-blue-50 dark:hover:bg-blue-900 transition-all animate-pop-in"><SortAsc className="h-4 w-4" /> Sort by</Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Top Regional Selections */}
+        <div className="w-full flex justify-center mt-10">
+          <div className="w-full max-w-6xl">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2 animate-fade-in text-left">Top Regional Selections</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+              {regionalSelections.map((region, idx) => (
+                <Card
+                  key={region.id}
+                  className="bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-shadow cursor-pointer group animate-fade-in flex flex-col justify-between"
+                  style={{ animationDelay: `${idx * 80}ms` }}
+                >
+                  <CardContent className="p-3 flex flex-col items-center">
+                    <div className="aspect-square w-full bg-slate-200 dark:bg-slate-700 rounded-lg mb-2 overflow-hidden">
                       <img 
                         src={region.image} 
                         alt={region.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-sm mb-1">{region.name}</h3>
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-sm mb-1 text-center">{region.name}</h3>
                     <div className="flex items-center gap-1">
                       <span className="text-yellow-500">★</span>
-                      <span className="text-sm text-slate-600 dark:text-slate-400">{region.rating}</span>
+                      <span className="text-xs text-slate-600 dark:text-slate-400">{region.rating}</span>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-          </section>
+          </div>
+        </div>
 
-          {/* Previous Trips */}
-          <section className="mb-16">
-            <div className="flex items-center mb-8">
-              <div className="flex-1 h-px bg-slate-300 dark:bg-slate-600"></div>
-              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 px-6">
-                Previous Trips
-              </h2>
-              <div className="flex-1 h-px bg-slate-300 dark:bg-slate-600"></div>
-            </div>
-            
+        {/* Previous Trips */}
+        <div className="w-full flex justify-center mt-12 mb-24">
+          <div className="w-full max-w-6xl">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2 animate-fade-in text-left">Previous Trips</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {previousTrips.map((trip) => (
-                <Card key={trip.id} className="bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-shadow cursor-pointer group">
-                  <div className="aspect-video bg-slate-200 dark:bg-slate-700 overflow-hidden">
+              {previousTrips.map((trip, idx) => (
+                <Card
+                  key={trip.id}
+                  className="bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-shadow cursor-pointer group animate-fade-in flex flex-col justify-between"
+                  style={{ animationDelay: `${idx * 100}ms` }}
+                >
+                  <div className="aspect-[3/4] bg-slate-200 dark:bg-slate-700 overflow-hidden rounded-t-xl">
                     <img 
                       src={trip.image} 
                       alt={trip.title}
@@ -163,23 +145,34 @@ export function HomePage() {
                 </Card>
               ))}
             </div>
-          </section>
+          </div>
         </div>
 
-        {/* Plan a Trip Button - Fixed Position */}
-        <div className="fixed bottom-8 right-8 z-50">
+        {/* Floating Plan a Trip Button */}
+        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end animate-fade-in">
           <Button 
             size="lg" 
             onClick={handlePlanTrip}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 rounded-full w-16 h-16 p-0"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 rounded-full w-16 h-16 p-0 flex items-center justify-center"
           >
             <Plus className="h-8 w-8" />
           </Button>
-          <div className="absolute -top-2 -right-2 bg-white dark:bg-slate-800 text-xs font-medium px-2 py-1 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 whitespace-nowrap">
+          <div className="mt-2 bg-white dark:bg-slate-800 text-xs font-medium px-3 py-1 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 whitespace-nowrap animate-slide-up">
             Plan a trip
           </div>
         </div>
       </div>
+      {/* Animations */}
+      <style jsx global>{`
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slide-down { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+        @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+        @keyframes pop-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-fade-in { animation: fade-in 0.7s both; }
+        .animate-slide-down { animation: slide-down 0.7s both; }
+        .animate-slide-up { animation: slide-up 0.7s both; }
+        .animate-pop-in { animation: pop-in 0.5s both; }
+      `}</style>
     </div>
   )
 }

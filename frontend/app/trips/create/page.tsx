@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Image as ImageIcon, MapPin, Save, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { motion } from "framer-motion";
+import { decodeJWT } from "@/lib/jwt-decode";
 
 export default function CreateTripPage() {
   const router = useRouter();
@@ -26,8 +28,8 @@ export default function CreateTripPage() {
   const [description, setDescription] = useState("");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // Mock suggestions (could be fetched from backend later)
   const suggestions = [
     { id: 1, title: "Eiffel Tower", subtitle: "Paris • Landmark", image: "/placeholder.jpg" },
     { id: 2, title: "Shibuya Crossing", subtitle: "Tokyo • City Life", image: "/placeholder.jpg" },
@@ -50,19 +52,32 @@ export default function CreateTripPage() {
     setCoverPreview(url);
   };
 
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!tripName.trim()) newErrors.tripName = "Trip name is required.";
+    if (!startDate) newErrors.startDate = "Start date is required.";
+    if (!endDate) newErrors.endDate = "End date is required.";
+    if (!location) newErrors.location = "Location is required.";
+    if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+      newErrors.endDate = "End date cannot be before start date.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async () => {
     if (!isLoggedIn) {
       router.push("/login");
       return;
     }
-    if (!tripName || !startDate || !endDate) {
-      toast({ title: "Missing required info", description: "Please provide trip name and dates." });
-      return;
-    }
+    if (!validate()) return;
     try {
       setIsSaving(true);
       const token = localStorage.getItem("token");
-      // Compose multipart form-data in case backend supports image upload
+      if (!token) {
+        router.push("/login");
+        return;
+      }
       const formData = new FormData();
       formData.append("name", tripName);
       formData.append("location", location);
@@ -71,22 +86,20 @@ export default function CreateTripPage() {
       formData.append("description", description);
       if (coverFile) formData.append("cover", coverFile);
 
-      // Attempt to save to backend if endpoint exists
       const res = await fetch("http://localhost:5001/api/trips", {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         body: formData,
-      }).catch(() => null);
+      });
 
-      if (!res || !res.ok) {
-        // Fallback success for demo when API isn't implemented
-        toast({ title: "Trip saved (demo)", description: "Your trip has been created locally." });
-        router.push("/profile");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        toast({ title: "Error", description: errorData.error || "Failed to create trip. Please try again." });
         return;
       }
 
       const data = await res.json();
-      toast({ title: "Trip created!", description: `Trip "${data.name || tripName}" has been created.` });
+      toast({ title: "Trip created!", description: `Trip \"${data.name || tripName}\" has been created.` });
       router.push("/profile");
     } catch (err: any) {
       toast({ title: "Error", description: err?.message || "Failed to create trip" });
@@ -96,110 +109,117 @@ export default function CreateTripPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-950">
       <Navigation />
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Title */}
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-100">Plan a new trip</h1>
-        </div>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 dark:text-white mb-2">Plan a New Trip</h1>
+          <p className="text-slate-600 dark:text-slate-300 mb-8">
+            Create a personalized itinerary and make your dream trip a reality.
+          </p>
+        </motion.div>
 
-        {/* Form Card */}
-        <Card className="mb-8">
-          <CardHeader className="pb-2 border-b">
-            <CardTitle>Create Trip</CardTitle>
-            <CardDescription>Begin creating a personalized travel plan</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
-            {/* Trip Name */}
-            <div className="grid gap-2">
-              <Label htmlFor="tripName">Trip Name</Label>
-              <Input id="tripName" value={tripName} onChange={(e) => setTripName(e.target.value)} placeholder="e.g., Summer in Europe" />
-            </div>
-
-            {/* Dates and Location */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="startDate" className="flex items-center gap-2"><Calendar className="h-4 w-4" />Start Date</Label>
-                <Input id="startDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          <Card className="mb-10 border-none shadow-lg rounded-2xl backdrop-blur bg-white/70 dark:bg-slate-800/70">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Create Trip</CardTitle>
+              <CardDescription>Fill out the details for your journey</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              <div>
+                <Label htmlFor="tripName">Trip Name</Label>
+                <Input id="tripName" value={tripName} onChange={(e) => setTripName(e.target.value)} placeholder="e.g., Summer in Europe" className={errors.tripName ? 'border-red-500' : ''} />
+                {errors.tripName && <p className="text-red-500 text-xs mt-1">{errors.tripName}</p>}
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="endDate" className="flex items-center gap-2"><Calendar className="h-4 w-4" />End Date</Label>
-                <Input id="endDate" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-              </div>
-              <div className="grid gap-2">
-                <Label className="flex items-center gap-2" htmlFor="location"><MapPin className="h-4 w-4" />Select a Place</Label>
-                <Select value={location} onValueChange={setLocation}>
-                  <SelectTrigger id="location">
-                    <SelectValue placeholder="Choose a destination" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="paris">Paris, France</SelectItem>
-                    <SelectItem value="tokyo">Tokyo, Japan</SelectItem>
-                    <SelectItem value="nyc">New York, USA</SelectItem>
-                    <SelectItem value="london">London, UK</SelectItem>
-                    <SelectItem value="rome">Rome, Italy</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
 
-            {/* Description */}
-            <div className="grid gap-2">
-              <Label htmlFor="description">Trip Description</Label>
-              <Textarea id="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Tell us about your trip goals, people travelling, interests..." />
-            </div>
-
-            {/* Cover Photo */}
-            <div className="grid gap-2">
-              <Label htmlFor="cover" className="flex items-center gap-2"><ImageIcon className="h-4 w-4" />Cover Photo (optional)</Label>
-              <div className="flex items-center gap-4">
-                <label className="inline-flex items-center justify-center px-4 py-2 border rounded-md cursor-pointer bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700">
-                  <input id="cover" type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
-                  <span className="text-sm font-medium">Upload Image</span>
-                </label>
-                {coverPreview && (
-                  <img src={coverPreview} alt="Cover preview" className="h-16 w-28 object-cover rounded-md border" />
-                )}
-              </div>
-            </div>
-
-            {/* Save Button */}
-            <div className="flex justify-end pt-2">
-              <Button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2">
-                <Save className="h-4 w-4" />
-                {isSaving ? "Saving..." : "Save Trip"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Suggestions */}
-        <Card>
-          <CardHeader className="pb-2 border-b">
-            <CardTitle>Suggestions for Places to Visit / Activities to Perform</CardTitle>
-            <CardDescription>Curated ideas based on popular choices</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {suggestions.map((s) => (
-                <div key={s.id} className="rounded-xl overflow-hidden border bg-white dark:bg-slate-800 hover:shadow-lg transition-shadow">
-                  <div className="aspect-video bg-slate-200 dark:bg-slate-700">
-                    <img src={s.image} alt={s.title} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-4">
-                    <div className="font-semibold text-slate-800 dark:text-slate-100">{s.title}</div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400 mb-3">{s.subtitle}</div>
-                    <Button variant="outline" size="sm" className="w-full flex items-center gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add to trip
-                    </Button>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="startDate" className="flex items-center gap-2"><Calendar className="h-4 w-4" />Start Date</Label>
+                  <Input id="startDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={errors.startDate ? 'border-red-500' : ''} />
+                  {errors.startDate && <p className="text-red-500 text-xs mt-1">{errors.startDate}</p>}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div>
+                  <Label htmlFor="endDate" className="flex items-center gap-2"><Calendar className="h-4 w-4" />End Date</Label>
+                  <Input id="endDate" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={errors.endDate ? 'border-red-500' : ''} />
+                  {errors.endDate && <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="location" className="flex items-center gap-2"><MapPin className="h-4 w-4" />Location</Label>
+                  <Select value={location} onValueChange={setLocation}>
+                    <SelectTrigger id="location" className={errors.location ? 'border-red-500' : ''}>
+                      <SelectValue placeholder="Choose destination" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="paris">Paris, France</SelectItem>
+                      <SelectItem value="tokyo">Tokyo, Japan</SelectItem>
+                      <SelectItem value="nyc">New York, USA</SelectItem>
+                      <SelectItem value="london">London, UK</SelectItem>
+                      <SelectItem value="rome">Rome, Italy</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="description">Trip Description</Label>
+                <Textarea id="description" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe your trip goals, companions, and activities..." />
+              </div>
+
+              <div>
+                <Label htmlFor="cover" className="flex items-center gap-2"><ImageIcon className="h-4 w-4" />Cover Photo</Label>
+                <div className="flex items-center gap-4 mt-2">
+                  <label className="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                    <input id="cover" type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
+                    <span className="text-sm font-medium">Upload Image</span>
+                  </label>
+                  {coverPreview && (
+                    <img src={coverPreview} alt="Cover preview" className="h-16 w-28 object-cover rounded-lg border" />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button onClick={handleSave} disabled={isSaving} className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white shadow-md">
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Saving..." : "Save Trip"}
+                </Button>
+              </div>
+
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+          <Card className="border-none shadow-lg rounded-2xl backdrop-blur bg-white/70 dark:bg-slate-800/70">
+            <CardHeader>
+              <CardTitle>Suggestions for Places & Activities</CardTitle>
+              <CardDescription>Popular picks for inspiration</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {suggestions.map((s) => (
+                  <motion.div key={s.id} whileHover={{ scale: 1.02 }} className="rounded-xl overflow-hidden border bg-white dark:bg-slate-800 shadow-md hover:shadow-lg transition">
+                    <div className="aspect-video overflow-hidden">
+                      <img src={s.image} alt={s.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                    </div>
+                    <div className="p-4">
+                      <div className="font-semibold text-slate-800 dark:text-slate-100">{s.title}</div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mb-3">{s.subtitle}</div>
+                      <Button variant="outline" size="sm" className="w-full flex items-center gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add to Trip
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
       </main>
     </div>
   );

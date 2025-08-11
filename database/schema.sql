@@ -64,14 +64,32 @@ CREATE TABLE IF NOT EXISTS sessions (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Trips table
+DROP TABLE IF EXISTS trips;
+CREATE TABLE IF NOT EXISTS trips (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  location VARCHAR(255) NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  description TEXT,
+  cover VARCHAR(500),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Sample data
 SET FOREIGN_KEY_CHECKS=0;
 DELETE FROM user_profiles;
 DELETE FROM notifications;
+DELETE FROM trips;
 DELETE FROM users;
 ALTER TABLE users AUTO_INCREMENT = 1;
 ALTER TABLE user_profiles AUTO_INCREMENT = 1;
 ALTER TABLE notifications AUTO_INCREMENT = 1;
+ALTER TABLE trips AUTO_INCREMENT = 1;
 SET FOREIGN_KEY_CHECKS=1;
 
 -- Insert sample users
@@ -100,3 +118,10 @@ INSERT INTO notifications (user_id, type, title, message, priority) VALUES
 (2, 'message', 'Team mention in #design-team', 'You were mentioned by John Doe in the design team channel: @user great work on the new dashboard mockup!', 'medium'),
 (3, 'like', 'Comment appreciation', 'Maria Rodriguez and 8 others liked your thoughtful comment on the UI/UX discussion thread.', 'low'),
 (4, 'system', 'Weekly activity report is ready', 'Your weekly activity report is now available for review. You have completed 15 tasks this week.', 'medium');
+
+-- Insert sample trips
+INSERT INTO trips (user_id, name, location, start_date, end_date, description) VALUES
+(2, 'Business Trip to San Francisco', 'San Francisco, USA', '2023-10-10', '2023-10-15', 'Attending the annual tech conference and exploring potential business opportunities.'),
+(3, 'Family Vacation in Disneyland', 'Anaheim, USA', '2023-11-20', '2023-11-25', 'A fun-filled vacation with the family at the happiest place on earth.'),
+(4, 'Ski Trip to Aspen', 'Aspen, USA', '2024-01-05', '2024-01-10', 'Enjoying the slopes and relaxing in the cozy lodges of Aspen.'),
+(5, 'Cultural Tour in Japan', 'Tokyo, Japan', '2024-03-15', '2024-03-25', 'Exploring the rich culture, history, and cuisine of Japan.');

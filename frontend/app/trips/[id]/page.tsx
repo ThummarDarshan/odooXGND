@@ -103,7 +103,11 @@ export default function TripDetailsPage() {
           <Card className="overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
             {trip.cover ? (
               <div className="aspect-video bg-slate-200 dark:bg-slate-700">
-                <img src={trip.cover} alt={trip.name} className="w-full h-full object-cover" />
+                <img
+                  src={trip.cover.startsWith('http') ? trip.cover : `http://localhost:5001${trip.cover}`}
+                  alt={trip.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
             ) : null}
             <CardHeader>
