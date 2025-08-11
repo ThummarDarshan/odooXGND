@@ -16,6 +16,7 @@ const notificationRoutes = require('./routes/notifications');
 const profileRoutes = require('./routes/profile');
 const adminRoutes = require('./routes/admin');
 const tripsRoutes = require('./routes/trips');
+const itinerariesRoutes = require('./routes/itineraries');
 
 // Import database connection
 const db = require('./config/database');
@@ -66,6 +67,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/trips', tripsRoutes);
+app.use('/api/itineraries', itinerariesRoutes);
 app.use('/uploads',
   cors({ origin: '*', credentials: false }),
   (req, res, next) => {

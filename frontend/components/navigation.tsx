@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Search, LogIn, UserPlus, Menu, Home, Info, User, Bell, Shield, Settings, History, LogOut } from "lucide-react"
+import { Search, LogIn, UserPlus, Menu, Home, Info, User, Bell, Shield, Settings, History, LogOut, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -139,6 +139,28 @@ export function Navigation() {
                 <span>Admin</span>
               </a>
             )}
+            {/* Itinerary Dropdown */}
+            <div className="relative group">
+              <button className="flex items-center space-x-2 text-foreground hover:text-blue-600 font-medium transition-colors duration-200 focus:outline-none">
+                <History className="h-4 w-4" />
+                <span>Itinerary</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-50">
+                <a
+                  href="/trips/itinerary-builder"
+                  className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-t-lg"
+                >
+                  Build Itinerary
+                </a>
+                <a
+                  href="/trips/itinerary-view"
+                  className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-b-lg"
+                >
+                  View Itinerary
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Desktop Actions */}
@@ -252,6 +274,27 @@ export function Navigation() {
                         <span>Admin</span>
                       </a>
                     )}
+                    {/* Itinerary Dropdown for Mobile */}
+                    <div className="flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden">
+                      <div className="flex items-center px-3 py-2 font-medium text-foreground bg-gray-50 border-b border-gray-200">
+                        <History className="h-5 w-5 mr-2" />
+                        Itinerary
+                      </div>
+                      <a
+                        href="/trips/itinerary-builder"
+                        className="px-6 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 border-b border-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Build Itinerary
+                      </a>
+                      <a
+                        href="/trips/itinerary-view"
+                        className="px-6 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        View Itinerary
+                      </a>
+                    </div>
                     <a
                       href="/notifications"
                       className="flex items-center space-x-3 text-foreground hover:text-foreground/80 font-medium transition-colors duration-200 p-3 rounded-lg hover:bg-muted"

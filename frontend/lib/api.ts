@@ -1,9 +1,11 @@
+import type { Stop } from "@/types/itinerary";
+
 // Centralized API utility with timeout and error handling
 const API_BASE_URL = 'http://localhost:5001/api';
 const REQUEST_TIMEOUT = 10000; // 10 seconds
 
 interface ApiOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   headers?: Record<string, string>;
   body?: any;
   timeout?: number;
@@ -53,29 +55,30 @@ export async function apiRequest(
 
     clearTimeout(timeoutId);
 
+    // Safely parse JSON or return empty object
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
       throw new ApiError(
-        errorData.error || `HTTP ${response.status}`,
+        data.error || `HTTP ${response.status}`,
         response.status,
-        errorData
+        data
       );
     }
 
-    return await response.json();
+    return data;
   } catch (error) {
     clearTimeout(timeoutId);
     
     if (error instanceof ApiError) {
       throw error;
     }
-    
-    if (error.name === 'AbortError') {
+    if (typeof error === 'object' && error !== null && 'name' in error && (error as any).name === 'AbortError') {
       throw new ApiError('Request timeout', 408);
     }
-    
     throw new ApiError(
-      error.message || 'Network error',
+      (typeof error === 'object' && error !== null && 'message' in error) ? (error as any).message : 'Network error',
       0
     );
   }
@@ -94,4 +97,72 @@ export const api = {
   
   delete: (endpoint: string, options?: Omit<ApiOptions, 'method'>) =>
     apiRequest(endpoint, { ...options, method: 'DELETE' }),
+  
+  patch: (endpoint: string, body?: any, options?: Omit<ApiOptions, 'method' | 'body'>) =>
+    apiRequest(endpoint, { ...options, method: 'PATCH', body }),
 };
+
+// API functions for itineraries
+
+export async function saveItineraryDraft({
+  user_id,
+  title,
+  description,
+  start_date,
+  end_date,
+  stops,
+  cost,
+  information,
+  itineraryId,
+}: {
+  user_id: number;
+  title: string;
+  description?: string;
+  start_date: string;
+  end_date: string;
+  stops: Stop[];
+  cost: number;
+  information?: string;
+  itineraryId: number;
+}) {
+  return api.patch(`/itineraries/${itineraryId}`, {
+    cost,
+    information,
+  });
+}
+
+export async function createItinerary({
+  user_id,
+  title,
+  description,
+  start_date,
+  end_date,
+  stops,
+  cost,
+  information,
+}: {
+  user_id: number;
+  title: string;
+  description?: string;
+  start_date: string;
+  end_date: string;
+  stops: Stop[];
+  cost: number;
+  information?: string;
+}) {
+  return api.post("/itineraries", {
+    user_id,
+    title,
+    description,
+    start_date,
+    end_date,
+    destinations: stops.map((s) => s.city),
+    activities: stops.map((s) => s.activities),
+    cost,
+    information,
+  });
+}
+
+export async function fetchItinerary(itineraryId: number) {
+  return api.get(`/itineraries/${itineraryId}`);
+}
