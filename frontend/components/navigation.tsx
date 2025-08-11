@@ -9,6 +9,7 @@ import { NotificationDropdown } from "./notification-dropdown"
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { Logo } from "@/components/ui/logo";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,42 +24,58 @@ export function Navigation() {
   const [notificationKey, setNotificationKey] = React.useState(0)
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [userRole, setUserRole] = React.useState<string | null>(null);
+  const [userAvatar, setUserAvatar] = React.useState<string | null>(null);
+  const [userInitials, setUserInitials] = React.useState<string>('');
   const [hasMounted, setHasMounted] = React.useState(false);
   const router = useRouter();
+
+  const fetchUserProfile = async (token: string) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const responseData = await response.json();
+        const userData = responseData.user || responseData;
+        setUserAvatar(userData.avatar || '');
+        setUserRole(userData.role || null); // Always use backend role
+        const firstName = userData.first_name || '';
+        const lastName = userData.last_name || '';
+        const initials = `${firstName.charAt(0) || ''}${lastName.charAt(0) || ''}`.toUpperCase();
+        setUserInitials(initials || 'U');
+      } else {
+        setUserAvatar('');
+        setUserRole(null);
+        setUserInitials('U');
+      }
+    } catch (error) {
+      setUserAvatar('');
+      setUserRole(null);
+      setUserInitials('U');
+    }
+  };
 
   React.useEffect(() => {
     setHasMounted(true);
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
-    
-    // Get user role if logged in
     if (token) {
-      const user = localStorage.getItem('user');
-      if (user) {
-        try {
-          const userData = JSON.parse(user);
-          setUserRole(userData.role);
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-        }
-      }
+      fetchUserProfile(token); // Only fetch from backend
     }
-    
-    const handleStorage = () => {
-      const token = localStorage.getItem('token');
-      setIsLoggedIn(!!token);
-      if (token) {
-        const user = localStorage.getItem('user');
-        if (user) {
-          try {
-            const userData = JSON.parse(user);
-            setUserRole(userData.role);
-          } catch (error) {
-            console.error('Error parsing user data:', error);
-          }
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'avatarUpdated') {
+        const token = localStorage.getItem('token');
+        if (token) fetchUserProfile(token);
+      }
+      if (event.key === 'token' || event.key === 'user') {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+        if (token) fetchUserProfile(token);
+        else {
+          setUserRole(null);
+          setUserAvatar(null);
+          setUserInitials('');
         }
-      } else {
-        setUserRole(null);
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -93,6 +110,12 @@ export function Navigation() {
   const handleNotificationChange = () => {
     setNotificationKey(prev => prev + 1);
   };
+
+  // Avatar URL logic (match profile page)
+  const backendUrl = "http://localhost:5001";
+  const avatarSrc = userAvatar && userAvatar.startsWith("/uploads/")
+    ? backendUrl + userAvatar
+    : userAvatar || "https://github.com/shadcn.png";
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-xl border-b border-border shadow-sm">
@@ -155,11 +178,19 @@ export function Navigation() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="flex items-center justify-center rounded-full p-2 hover:bg-muted transition-colors"
+                      className="flex items-center justify-center rounded-full p-1 hover:bg-muted transition-colors"
                       title="Profile"
                       type="button"
                     >
-                      <User className="h-5 w-5 text-foreground hover:text-blue-600" />
+                      <Avatar className="w-8 h-8">
+                      <AvatarImage 
+                        src={avatarSrc} 
+                        alt="Profile"
+                      />
+                        <AvatarFallback className="bg-blue-500 text-white text-sm font-medium">
+                          {userInitials || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -296,14 +327,22 @@ export function Navigation() {
                     {hasMounted ? (
                       isLoggedIn ? (
                         <>
-                          <Button
-                            variant="outline"
-                            className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
-                            onClick={() => { router.push('/profile'); setIsOpen(false); }}
-                          >
-                            <User className="mr-3 h-4 w-4" />
-                            Profile
-                          </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
+                    onClick={() => { router.push('/profile'); setIsOpen(false); }}
+                  >
+                    <Avatar className="w-4 h-4 mr-3">
+                      <AvatarImage 
+                        src={avatarSrc} 
+                        alt="Profile"
+                      />
+                      <AvatarFallback className="bg-blue-500 text-white text-xs">
+                        {userInitials || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    Profile
+                  </Button>
                           <Button
                             variant="outline"
                             className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
