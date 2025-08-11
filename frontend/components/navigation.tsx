@@ -175,6 +175,10 @@ export function Navigation() {
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/trips')}>
+                      <History className="mr-2 h-4 w-4" />
+                      My Trips
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => handleProfileAction('logout')} className="text-red-600">
                       <LogOut className="mr-2 h-4 w-4" />

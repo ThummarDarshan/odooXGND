@@ -266,108 +266,108 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
             <div className="flex-shrink-0">
               <div className="relative">
                 <Avatar className="w-32 h-32 border-4 border-blue-200 dark:border-blue-800 shadow-lg">
-                  <AvatarImage src={avatarSrc} />
+                      <AvatarImage src={avatarSrc} />
                   <AvatarFallback className="text-3xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                     {profileData.firstName[0]}{profileData.lastName[0]}
                   </AvatarFallback>
-                </Avatar>
+                    </Avatar>
                 <label htmlFor="avatar-upload" className="absolute bottom-2 right-2 bg-white dark:bg-slate-700 rounded-full p-2 shadow cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors">
-                  <Camera className="h-5 w-5 text-blue-600 dark:text-blue-300" />
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAvatarChange}
-                    disabled={avatarUploading}
-                  />
-                </label>
-              </div>
-            </div>
+                      <Camera className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+                      <input
+                        id="avatar-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleAvatarChange}
+                        disabled={avatarUploading}
+                      />
+                    </label>
+                      </div>
+                  </div>
 
             {/* User Information */}
             <div className="flex-1 space-y-6">
-              <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
                   User Details
                 </h2>
                 <div className="flex gap-3">
-                  <Button
-                    variant={isEditing ? "default" : "outline"}
-                    onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                      <Button
+                        variant={isEditing ? "default" : "outline"}
+                        onClick={isEditing ? handleSave : () => setIsEditing(true)}
                     className="flex items-center gap-2"
-                  >
-                    {isEditing ? (
-                      <>
+                      >
+                        {isEditing ? (
+                          <>
                         <Save className="h-4 w-4" />
                         Save
-                      </>
-                    ) : (
-                      <>
+                          </>
+                        ) : (
+                          <>
                         <Edit3 className="h-4 w-4" />
                         Edit
-                      </>
-                    )}
-                  </Button>
-                </div>
+                          </>
+                        )}
+                      </Button>
+                    </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-slate-700 dark:text-slate-200">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={profileData.firstName}
-                    onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
-                    disabled={!isEditing}
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName" className="text-slate-700 dark:text-slate-200">First Name</Label>
+                        <Input
+                          id="firstName"
+                          value={profileData.firstName}
+                          onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                          disabled={!isEditing}
                     className="rounded-lg"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-slate-700 dark:text-slate-200">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={profileData.lastName}
-                    onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
-                    disabled={!isEditing}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName" className="text-slate-700 dark:text-slate-200">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          value={profileData.lastName}
+                          onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                          disabled={!isEditing}
                     className="rounded-lg"
-                  />
-                </div>
-                <div className="space-y-2">
+                        />
+                      </div>
+                    <div className="space-y-2">
                   <Label htmlFor="email" className="text-slate-700 dark:text-slate-200">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profileData.email}
-                    onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                    disabled={!isEditing}
+                      <Input
+                        id="email"
+                        type="email"
+                        value={profileData.email}
+                        onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                        disabled={!isEditing}
                     className="rounded-lg"
-                  />
-                </div>
-                <div className="space-y-2">
+                      />
+                    </div>
+                    <div className="space-y-2">
                   <Label htmlFor="phone" className="text-slate-700 dark:text-slate-200">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={profileData.phone}
-                    onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                    disabled={!isEditing}
+                      <Input
+                        id="phone"
+                        value={profileData.phone}
+                        onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                        disabled={!isEditing}
                     className="rounded-lg"
-                  />
-                </div>
+                      />
+                    </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="location" className="text-slate-700 dark:text-slate-200">Location</Label>
-                  <Input
-                    id="location"
-                    value={profileData.location}
-                    onChange={(e) => setProfileData({...profileData, location: e.target.value})}
-                    disabled={!isEditing}
+                      <Input
+                        id="location"
+                        value={profileData.location}
+                        onChange={(e) => setProfileData({...profileData, location: e.target.value})}
+                        disabled={!isEditing}
                     className="rounded-lg"
-                  />
-                </div>
+                      />
+                    </div>
               </div>
             </div>
-          </div>
-        </div>
+              </div>
+            </div>
 
         {/* Preplanned Trips Section */}
         <div className="mb-8">
@@ -381,25 +381,25 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
                   <CardTitle className="text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
                     <Plane className="h-5 w-5 text-blue-500" />
                     {trip.title}
-                  </CardTitle>
+                </CardTitle>
                   <CardDescription className="text-slate-600 dark:text-slate-400">
                     {trip.destination}
                   </CardDescription>
-                </CardHeader>
+              </CardHeader>
                 <CardContent className="pt-0">
                   <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4">
                     <Calendar className="h-4 w-4" />
                     {trip.date}
-                  </div>
+                        </div>
                   <Button className="w-full" variant="outline">
                     <Eye className="h-4 w-4 mr-2" />
                     View
                   </Button>
-                </CardContent>
-              </Card>
+              </CardContent>
+            </Card>
             ))}
-          </div>
-        </div>
+                      </div>
+                    </div>
 
         {/* Previous Trips Section */}
         <div className="mb-8">
@@ -426,12 +426,12 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
                   <Button className="w-full" variant="outline">
                     <Eye className="h-4 w-4 mr-2" />
                     View
-                  </Button>
+                        </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
+            </div>
       </main>
 
       {/* Cropper Modal */}
