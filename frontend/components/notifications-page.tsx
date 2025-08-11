@@ -84,7 +84,7 @@ const mockNotifications: Notification[] = [
     type: "promotion",
     title: "Limited time offer - 50% off Pro Plan",
     message:
-      "Upgrade to NexaUI Pro today and get 50% off for the first 3 months! This exclusive offer expires in 24 hours. Don't miss out!",
+              "Upgrade to GlobeTrotter Pro today and get 50% off for the first 3 months! This exclusive offer expires in 24 hours. Don't miss out!",
     time: "1 day ago",
     read: false,
     priority: "high",

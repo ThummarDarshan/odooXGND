@@ -1,10 +1,10 @@
-# NexaUI Admin System
+# GlobeTrotter Admin System
 
-This document describes the admin functionality implemented in the NexaUI project.
+This document describes the admin functionality implemented in the GlobeTrotter project.
 
 ## Overview
 
-The admin system provides comprehensive user management, activity monitoring, and administrative controls for the NexaUI platform. Admins can manage users, view system statistics, send notifications, and maintain their own profiles.
+The admin system provides comprehensive user management, activity monitoring, and administrative controls for the GlobeTrotter platform. Admins can manage users, view system statistics, send notifications, and maintain their own profiles.
 
 ## Features
 
@@ -41,7 +41,7 @@ The admin system provides comprehensive user management, activity monitoring, an
 
 ### Admin User
 The admin user is created in the database with the following credentials:
-- **Email**: `admin@nexaui.com`
+- **Email**: `admin@globetrotter.com`
 - **Password**: `password123`
 - **Role**: `admin`
 - **Status**: `verified`
@@ -93,7 +93,7 @@ The admin user is created in the database with the following credentials:
 ### 1. Access Admin Dashboard
 1. Navigate to `/admin/login`
 2. Login with admin credentials:
-   - Email: `admin@nexaui.com`
+   - Email: `admin@globetrotter.com`
    - Password: `password123`
 3. You'll be redirected to `/admin` dashboard
 
@@ -156,7 +156,7 @@ CORS_ORIGIN=http://localhost:3000
 ## Admin Credentials
 
 ### Default Admin Account
-- **Email**: `admin@nexaui.com`
+- **Email**: `admin@globetrotter.com`
 - **Password**: `password123`
 - **Role**: `admin`
 - **Status**: `verified`

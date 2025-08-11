@@ -10,7 +10,7 @@ const testimonials = [
     avatar: "👩‍💻",
     rating: 5,
     content:
-      "NexaUI has completely transformed our development workflow. The components are beautiful, well-documented, and incredibly easy to customize.",
+              "GlobeTrotter has completely transformed our development workflow. The components are beautiful, well-documented, and incredibly easy to customize.",
   },
   {
     name: "Marcus Rodriguez",
@@ -19,7 +19,7 @@ const testimonials = [
     avatar: "👨‍💼",
     rating: 5,
     content:
-      "The best UI library I've ever used. Our team shipped features 3x faster after switching to NexaUI. The quality is outstanding!",
+              "The best UI library I've ever used. Our team shipped features 3x faster after switching to GlobeTrotter. The quality is outstanding!",
   },
   {
     name: "Emily Johnson",
@@ -37,7 +37,7 @@ const testimonials = [
     avatar: "👨‍💻",
     rating: 5,
     content:
-      "NexaUI helped us build a world-class product in record time. The component library is comprehensive and the support is fantastic.",
+              "GlobeTrotter helped us build a world-class product in record time. The component library is comprehensive and the support is fantastic.",
   },
   {
     name: "Lisa Wang",
@@ -46,7 +46,7 @@ const testimonials = [
     avatar: "👩‍🎨",
     rating: 5,
     content:
-      "As a designer, I love how flexible and customizable NexaUI is. It perfectly bridges the gap between design and development.",
+              "As a designer, I love how flexible and customizable GlobeTrotter is. It perfectly bridges the gap between design and development.",
   },
   {
     name: "Alex Thompson",
@@ -76,7 +76,7 @@ export function TestimonialsSection() {
             Says
           </h2>
           <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            Join thousands of developers who trust NexaUI for their projects.
+            Join thousands of developers who trust GlobeTrotter for their projects.
           </p>
         </div>
 

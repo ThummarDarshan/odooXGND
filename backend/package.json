@@ -1,7 +1,7 @@
 {
-  "name": "nexaui-backend",
+  "name": "globetrotter-backend",
   "version": "1.0.0",
-  "description": "Backend API for NexaUI project",
+  "description": "Backend API for GlobeTrotter project",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -6,9 +6,14 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'GlobeTrotter - Travel & Exploration Platform',
+  description: 'Your all-in-one platform for modern UI development, collaboration, and productivity.',
+  generator: 'GlobeTrotter',
+  icons: {
+    icon: '/globetrotter-logo.svg',
+    shortcut: '/globetrotter-logo.svg',
+    apple: '/globetrotter-logo.svg',
+  },
 }
 
 export default function RootLayout({

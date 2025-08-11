@@ -3,6 +3,7 @@
 import { Github, Twitter, Linkedin, Mail, Heart, ArrowUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Logo } from "@/components/ui/logo"
 
 const footerLinks = {
   product: [
@@ -39,7 +40,7 @@ const socialLinks = [
   { name: "GitHub", icon: Github, href: "https://github.com", color: "hover:text-slate-700" },
   { name: "Twitter", icon: Twitter, href: "https://twitter.com", color: "hover:text-blue-500" },
   { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com", color: "hover:text-blue-600" },
-  { name: "Email", icon: Mail, href: "mailto:hello@nexaui.com", color: "hover:text-blue-500" },
+          { name: "Email", icon: Mail, href: "mailto:hello@globetrotter.com", color: "hover:text-blue-500" },
 ]
 
 export function Footer() {
@@ -70,10 +71,7 @@ export function Footer() {
           {/* Logo Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">N</span>
-              </div>
-              <span className="text-xl font-bold">NexaUI</span>
+              <Logo size="md" className="text-white" />
             </div>
             <p className="text-slate-400 mb-6 max-w-xs">
               Building the future of web development with beautiful, accessible, and performant UI components.
@@ -153,7 +151,7 @@ export function Footer() {
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-slate-700">
           <div className="flex items-center space-x-2 text-slate-400 mb-4 md:mb-0">
-            <span>© 2024 NexaUI. Made with</span>
+            <span>© 2024 GlobeTrotter. Made with</span>
             <Heart className="h-4 w-4 text-red-500" />
             <span>by developers, for developers.</span>
           </div>

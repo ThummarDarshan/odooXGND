@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { Shield, ArrowLeft, Eye, EyeOff, Mail, Lock } from "lucide-react"
+import { Logo } from "@/components/ui/logo"
 
 export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false)
@@ -135,7 +136,7 @@ export default function AdminLogin() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="admin@nexaui.com"
+                      placeholder="admin@globetrotter.com"
                       className="pl-10 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
                       required
                     />
@@ -187,7 +188,7 @@ export default function AdminLogin() {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-slate-500">
-                Default admin credentials: admin@nexaui.com / password123
+                Default admin credentials: admin@globetrotter.com / password123
               </p>
             </div>
           </CardContent>

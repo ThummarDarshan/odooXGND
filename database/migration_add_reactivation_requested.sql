@@ -1,7 +1,7 @@
 -- Migration: Add reactivation_requested column to users table
 -- Run this script to update existing databases
 
-USE nexaui_db;
+USE globetrotter_db;
 
 -- Add reactivation_requested column if it doesn't exist
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reactivation_requested TINYINT(1) DEFAULT 0;

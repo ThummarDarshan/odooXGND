@@ -53,7 +53,7 @@ app.use(passport.initialize());
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'NexaUI Backend is running',
+    message: 'GlobeTrotter Backend is running',
     timestamp: new Date().toISOString()
   });
 });

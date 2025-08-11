@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendEmail(to, subject, text, html) {
   const mailOptions = {
-    from: process.env.SMTP_FROM || '"NexaUI" <no-reply@nexaui.com>',
+    from: process.env.SMTP_FROM || '"GlobeTrotter" <no-reply@globetrotter.com>',
     to,
     subject,
     text,

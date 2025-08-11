@@ -64,7 +64,7 @@ export function FeatureCards() {
           </div>
 
           <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
-            Why Choose <span className="text-blue-600">NexaUI</span>
+            Why Choose <span className="text-blue-600">GlobeTrotter</span>
           </h2>
 
           <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">

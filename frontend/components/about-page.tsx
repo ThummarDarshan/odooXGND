@@ -168,7 +168,7 @@ export function AboutPage() {
             <div className="text-center mb-16 animate-in fade-in-0 slide-in-from-top-4 duration-1000">
               <h2 className="text-4xl font-bold text-foreground mb-6">Meet Our Team</h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                The passionate individuals behind NexaUI, working tirelessly to make development better for everyone.
+                The passionate individuals behind GlobeTrotter, working tirelessly to make development better for everyone.
               </p>
             </div>
 
@@ -205,7 +205,7 @@ export function AboutPage() {
             <div className="animate-in fade-in-0 slide-in-from-bottom-8 duration-1000">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Build Something Amazing?</h2>
               <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Join thousands of developers who are already building the future with NexaUI. Start your journey today.
+                Join thousands of developers who are already building the future with GlobeTrotter. Start your journey today.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button

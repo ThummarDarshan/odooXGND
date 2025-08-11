@@ -129,7 +129,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
         const response = await fetch('https://api.github.com/user/emails', {
           headers: {
             'Authorization': `token ${accessToken}`,
-            'User-Agent': 'NexaUI'
+            'User-Agent': 'GlobeTrotter'
           }
         });
         const emails = await response.json();
@@ -272,12 +272,12 @@ router.post('/signup', signupValidation, async (req, res) => {
     try {
       await pool.execute(
         'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
-        [newUser[0].id, 'system', 'Welcome to NexaUI!', `Welcome ${newUser[0].first_name} ${newUser[0].last_name}! Your account has been created successfully.`, 'high']
+        [newUser[0].id, 'system', 'Welcome to GlobeTrotter!', `Welcome ${newUser[0].first_name} ${newUser[0].last_name}! Your account has been created successfully.`, 'high']
       );
       // Add setup notification
       await pool.execute(
         'INSERT INTO notifications (user_id, type, title, message, priority) VALUES (?, ?, ?, ?, ?)',
-        [newUser[0].id, 'promotion', 'Complete Your Profile', `Welcome! Complete your profile to get the most out of NexaUI. Add your bio, location, and profile picture.`, 'medium']
+        [newUser[0].id, 'promotion', 'Complete Your Profile', `Welcome! Complete your profile to get the most out of GlobeTrotter. Add your bio, location, and profile picture.`, 'medium']
       );
       // Add security notification
       await pool.execute(
@@ -290,12 +290,12 @@ router.post('/signup', signupValidation, async (req, res) => {
         [newUser[0].id, 'system', 'Account Created', 'Your account was created.', 'medium']
       );
       // Send welcome email
-      const welcomeSubject = 'Welcome to NexaUI!';
-      const welcomeText = `Hello ${newUser[0].first_name},\n\nWelcome to NexaUI!\n\nThank you for joining our community. NexaUI is your all-in-one platform for modern UI development, collaboration, and productivity.\n\nHere’s what you can do next:\n- Explore your dashboard\n- Complete your profile for a personalized experience\n- Check out our latest features and resources\n\nIf you have any questions, our support team is here to help.\n\nGet started now: https://nexaui.com/login\n\nWe’re excited to have you with us!\n\nBest regards,\nThe NexaUI Team`;
+      const welcomeSubject = 'Welcome to GlobeTrotter!';
+      const welcomeText = `Hello ${newUser[0].first_name},\n\nWelcome to GlobeTrotter!\n\nThank you for joining our community. GlobeTrotter is your all-in-one platform for modern UI development, collaboration, and productivity.\n\nHere’s what you can do next:\n- Explore your dashboard\n- Complete your profile for a personalized experience\n- Check out our latest features and resources\n\nIf you have any questions, our support team is here to help.\n\nGet started now: https://globetrotter.com/login\n\nWe’re excited to have you with us!\n\nBest regards,\nThe GlobeTrotter Team`;
       const welcomeHtml = `
         <div style=\"font-family: Arial, sans-serif; color: #222;\">
-          <h2 style=\"color: #4F46E5;\">Welcome to NexaUI, ${newUser[0].first_name}!</h2>
-          <p>Thank you for joining our community. <b>NexaUI</b> is your all-in-one platform for modern UI development, collaboration, and productivity.</p>
+          <h2 style=\"color: #4F46E5;\">Welcome to GlobeTrotter, ${newUser[0].first_name}!</h2>
+          <p>Thank you for joining our community. <b>GlobeTrotter</b> is your all-in-one platform for modern UI development, collaboration, and productivity.</p>
           <ul>
             <li>Explore your dashboard</li>
             <li>Complete your profile for a personalized experience</li>
@@ -305,7 +305,7 @@ router.post('/signup', signupValidation, async (req, res) => {
           <p style=\"margin: 32px 0;\">
             <a href=\"https://http://localhost:3000/login\" style=\"background: #4F46E5; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;\">Get Started</a>
           </p>
-          <p>We’re excited to have you with us!<br/>Best regards,<br/><b>The NexaUI Team</b></p>
+          <p>We're excited to have you with us!<br/>Best regards,<br/><b>The GlobeTrotter Team</b></p>
         </div>
       `;
       try {
@@ -578,20 +578,20 @@ router.post('/forgot-password', async (req, res) => {
     );
 
     // Send OTP email
-    const subject = 'NexaUI Password Reset Request';
+    const subject = 'GlobeTrotter Password Reset Request';
     const firstName = user.first_name ? user.first_name : '';
-    const text = `Hello${firstName ? ' ' + firstName : ''},\n\nWe received a request to reset your NexaUI account password.\n\nYour One-Time Password (OTP) is: ${otp}\n\nThis OTP is valid for 15 minutes.\n\nIf you did not request a password reset, please ignore this email.\n\nThank you,\nThe NexaUI Team`;
+    const text = `Hello${firstName ? ' ' + firstName : ''},\n\nWe received a request to reset your GlobeTrotter account password.\n\nYour One-Time Password (OTP) is: ${otp}\n\nThis OTP is valid for 15 minutes.\n\nIf you did not request a password reset, please ignore this email.\n\nThank you,\nThe GlobeTrotter Team`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; background: #f9f9fc;">
-        <h2 style="color: #3b82f6; margin-bottom: 12px;">NexaUI Password Reset</h2>
+        <h2 style="color: #3b82f6; margin-bottom: 12px;">GlobeTrotter Password Reset</h2>
         <p>Hello${firstName ? ' <b>' + firstName + '</b>' : ''},</p>
-        <p>We received a request to reset your <b>NexaUI</b> account password.</p>
+        <p>We received a request to reset your <b>GlobeTrotter</b> account password.</p>
         <p style="font-size: 1.1em; margin: 24px 0;">Your <b>One-Time Password (OTP)</b> is:</p>
         <div style="font-size: 2em; font-weight: bold; color: #2563eb; letter-spacing: 4px; margin-bottom: 16px;">${otp}</div>
         <p style="margin-bottom: 16px;">This OTP is valid for <b>15 minutes</b>.</p>
         <p>If you did not request a password reset, you can safely ignore this email.</p>
         <hr style="margin: 24px 0; border: none; border-top: 1px solid #e0e0e0;" />
-        <p style="font-size: 0.95em; color: #888;">Thank you,<br/>The NexaUI Team</p>
+        <p style="font-size: 0.95em; color: #888;">Thank you,<br/>The GlobeTrotter Team</p>
       </div>
     `;
 

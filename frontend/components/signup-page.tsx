@@ -12,6 +12,7 @@ import { GradientBackground } from "./gradient-background"
 import { AnimatedDots } from "./animated-dots"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { Logo } from "@/components/ui/logo"
 
 export function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -101,12 +102,9 @@ export function SignupPage() {
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 animate-pulse opacity-20"></div>
               </div>
             </div>
-            <a
-              href="/"
-              className="text-3xl font-bold text-foreground dark:text-slate-100 hover:text-blue-600 transition-colors duration-300"
-            >
-              NexaUI
-            </a>
+                          <a href="/" className="hover:opacity-80 transition-opacity duration-300">
+                <Logo size="lg" />
+              </a>
             <p className="text-muted-foreground dark:text-slate-400 mt-2">Create your account and start building amazing things.</p>
           </div>
 

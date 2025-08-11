@@ -1,7 +1,7 @@
 -- Migration: Add is_enabled column to users table
 -- Run this script to update existing databases
 
-USE nexaui_db;
+USE globetrotter_db;
 
 -- Add is_enabled column if it doesn't exist
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_enabled TINYINT(1) DEFAULT 1;

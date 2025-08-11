@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { NotificationDropdown } from "./notification-dropdown"
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
+import { Logo } from "@/components/ui/logo";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -77,11 +78,8 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <a
-              href="/"
-              className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
-            >
-              NexaUI
+            <a href="/" className="hover:opacity-80 transition-opacity duration-300">
+              <Logo size="md" />
             </a>
           </div>
 
