@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Search, LogIn, UserPlus, Menu, Home, Info, User, Bell, Shield } from "lucide-react"
+import { Search, LogIn, UserPlus, Menu, Home, Info, User, Bell, Shield, Settings, History, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -9,6 +9,14 @@ import { NotificationDropdown } from "./notification-dropdown"
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { Logo } from "@/components/ui/logo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -16,7 +24,7 @@ export function Navigation() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [userRole, setUserRole] = React.useState<string | null>(null);
   const [hasMounted, setHasMounted] = React.useState(false);
-  const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
+  const router = useRouter();
 
   React.useEffect(() => {
     setHasMounted(true);
@@ -58,12 +66,26 @@ export function Navigation() {
   }, []);
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setIsLoggedIn(false);
-      if (router) router.push('/');
-      else window.location.href = '/';
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    router.push('/');
+  };
+
+  const handleProfileAction = (action: string) => {
+    switch (action) {
+      case 'profile':
+        router.push('/profile');
+        break;
+      case 'activity':
+        router.push('/notifications');
+        break;
+      case 'settings':
+        router.push('/settings');
+        break;
+      case 'logout':
+        handleLogout();
+        break;
     }
   };
 
@@ -127,35 +149,53 @@ export function Navigation() {
             {/* Theme Toggle */}
             <ThemeToggle />
             <NotificationDropdown key={notificationKey} onNotificationChange={handleNotificationChange} />
-            {/* Profile Icon */}
+            {/* Profile Icon with Dropdown */}
             {hasMounted ? (
-              <button
-                onClick={() => {
-                  if (isLoggedIn) {
-                    window.location.href = '/profile';
-                  } else {
-                    window.location.href = '/login';
-                  }
-                }}
-                className="flex items-center justify-center rounded-full p-2 hover:bg-muted transition-colors"
-                title="Profile"
-                type="button"
-              >
-                <User className="h-5 w-5 text-foreground hover:text-blue-600" />
-              </button>
+              isLoggedIn ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="flex items-center justify-center rounded-full p-2 hover:bg-muted transition-colors"
+                      title="Profile"
+                      type="button"
+                    >
+                      <User className="h-5 w-5 text-foreground hover:text-blue-600" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => handleProfileAction('profile')}>
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleProfileAction('activity')}>
+                      <History className="mr-2 h-4 w-4" />
+                      Activity History
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleProfileAction('settings')}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleProfileAction('logout')} className="text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <button
+                  onClick={() => router.push('/login')}
+                  className="flex items-center justify-center rounded-full p-2 hover:bg-muted transition-colors"
+                  title="Login"
+                  type="button"
+                >
+                  <User className="h-5 w-5 text-foreground hover:text-blue-600" />
+                </button>
+              )
             ) : null}
             <div className="h-6 w-px bg-border mx-2"></div>
             {hasMounted ? (
-              isLoggedIn ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-3 md:py-2 lg:px-4 lg:py-2 rounded-lg font-medium bg-background shadow-sm hover:shadow-md whitespace-nowrap min-w-fit"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              ) : (
+              isLoggedIn ? null : (
                 <>
                   <Button
                     variant="outline"
@@ -251,13 +291,40 @@ export function Navigation() {
                   <div className="flex flex-col space-y-3 pt-4 border-t border-border">
                     {hasMounted ? (
                       isLoggedIn ? (
-                        <Button
-                          variant="outline"
-                          className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
-                          onClick={() => { handleLogout(); setIsOpen(false); }}
-                        >
-                          Logout
-                        </Button>
+                        <>
+                          <Button
+                            variant="outline"
+                            className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
+                            onClick={() => { router.push('/profile'); setIsOpen(false); }}
+                          >
+                            <User className="mr-3 h-4 w-4" />
+                            Profile
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
+                            onClick={() => { router.push('/notifications'); setIsOpen(false); }}
+                          >
+                            <History className="mr-3 h-4 w-4" />
+                            Activity History
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full text-foreground border-border hover:bg-muted hover:text-foreground hover:border-border transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
+                            onClick={() => { router.push('/settings'); setIsOpen(false); }}
+                          >
+                            <Settings className="mr-3 h-4 w-4" />
+                            Settings
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200 px-4 py-3 rounded-lg font-medium bg-background shadow-sm hover:shadow-md"
+                            onClick={() => { handleLogout(); setIsOpen(false); }}
+                          >
+                            <LogOut className="mr-3 h-4 w-4" />
+                            Logout
+                          </Button>
+                        </>
                       ) : (
                         <>
                           <Button
