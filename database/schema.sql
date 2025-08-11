@@ -5,7 +5,6 @@
 CREATE DATABASE IF NOT EXISTS globetrotter_db;
 USE globetrotter_db;
 
-
 -- Users table
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
@@ -32,7 +31,8 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT UNIQUE NOT NULL,
   phone VARCHAR(30),
-  location VARCHAR(255),
+  city VARCHAR(100),
+  country VARCHAR(100),
   website VARCHAR(500),
   social_links TEXT,
   preferences TEXT,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS sessions (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Clean tables before inserting sample data
+-- Sample data
 SET FOREIGN_KEY_CHECKS=0;
 DELETE FROM user_profiles;
 DELETE FROM notifications;
@@ -83,12 +83,12 @@ INSERT INTO users (first_name, last_name, email, password, role, is_verified, is
 ('Disabled', 'User', 'disabled@example.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J/HS.iK2', 'user', 1, 0);
 
 -- Insert sample user profiles
-INSERT INTO user_profiles (user_id, phone, location, website, social_links) VALUES
-  (1, NULL, 'San Francisco, CA', 'https://admin.globetrotter.com', '{"twitter": "admin_globetrotter", "linkedin": "admin-globetrotter", "github": "admin-globetrotter"}'),
-  (2, NULL, 'New York, NY', 'https://johndoe.dev', '{"twitter": "johndoe", "linkedin": "john-doe", "github": "johndoe"}'),
-  (3, NULL, 'Los Angeles, CA', 'https://janesmith.design', '{"twitter": "janesmith", "linkedin": "jane-smith", "dribbble": "janesmith"}'),
-  (4, NULL, 'Chicago, IL', 'https://bobjohnson.dev', '{"twitter": "bobjohnson", "linkedin": "bob-johnson", "github": "bobjohnson"}'),
-  (5, NULL, 'Disabled City, DC', 'https://disabled.dev', '{"twitter": "disabled", "linkedin": "disabled-user", "github": "disabled"}');
+INSERT INTO user_profiles (user_id, phone, city, country, website, social_links) VALUES
+  (1, NULL, 'San Francisco', 'USA', 'https://admin.globetrotter.com', '{"twitter": "admin_globetrotter", "linkedin": "admin-globetrotter", "github": "admin-globetrotter"}'),
+  (2, NULL, 'New York', 'USA', 'https://johndoe.dev', '{"twitter": "johndoe", "linkedin": "john-doe", "github": "johndoe"}'),
+  (3, NULL, 'Los Angeles', 'USA', 'https://janesmith.design', '{"twitter": "janesmith", "linkedin": "jane-smith", "dribbble": "janesmith"}'),
+  (4, NULL, 'Chicago', 'USA', 'https://bobjohnson.dev', '{"twitter": "bobjohnson", "linkedin": "bob-johnson", "github": "bobjohnson"}'),
+  (5, NULL, 'Disabled City', 'USA', 'https://disabled.dev', '{"twitter": "disabled", "linkedin": "disabled-user", "github": "disabled"}');
 
 -- Insert sample notifications
 INSERT INTO notifications (user_id, type, title, message, priority) VALUES

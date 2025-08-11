@@ -22,10 +22,12 @@ const upload = multer({ storage });
 // Validation rules
 const updateProfileValidation = [
   body('phone').optional().trim().isLength({ max: 30 }).withMessage('Phone must be less than 30 characters'),
-  body('location').optional().trim().isLength({ max: 255 }).withMessage('Location must be less than 255 characters'),
+  body('city').optional().trim().isLength({ max: 100 }).withMessage('City must be less than 100 characters'),
+  body('country').optional().trim().isLength({ max: 100 }).withMessage('Country must be less than 100 characters'),
   body('website').optional().isURL().withMessage('Website must be a valid URL'),
   body('social_links').optional().isObject().withMessage('Social links must be an object')
 ];
+
 
 // @route   GET /api/profile
 // @desc    Get user profile
@@ -40,7 +42,8 @@ router.get('/', authenticateToken, async (req, res) => {
         up.id,
         up.user_id,
         up.phone,
-        up.location,
+        up.city,
+        up.country,
         up.website,
         up.social_links,
         up.preferences,
@@ -58,8 +61,8 @@ router.get('/', authenticateToken, async (req, res) => {
     `, [userId]);
 
     if (profiles.length === 0) {
-      return res.status(404).json({ 
-        error: 'Profile not found' 
+      return res.status(404).json({
+        error: 'Profile not found'
       });
     }
 
@@ -78,7 +81,8 @@ router.get('/', authenticateToken, async (req, res) => {
           up.id,
           up.user_id,
           up.phone,
-          up.location,
+          up.city,
+        up.country,
           up.website,
           up.social_links,
           up.preferences,
@@ -106,8 +110,8 @@ router.get('/', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error' 
+    res.status(500).json({
+      error: 'Internal server error'
     });
   }
 });
@@ -120,14 +124,14 @@ router.put('/', authenticateToken, updateProfileValidation, async (req, res) => 
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        details: errors.array() 
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: errors.array()
       });
     }
 
     const userId = req.user.id;
-    const { phone, location, website, social_links, preferences } = req.body;
+    const { phone, city, country, website, social_links, preferences } = req.body;
 
     // Check if profile exists
     const [existingProfiles] = await pool.execute(
@@ -138,11 +142,11 @@ router.put('/', authenticateToken, updateProfileValidation, async (req, res) => 
     if (existingProfiles.length === 0) {
       // Create new profile
       const [result] = await pool.execute(
-        'INSERT INTO user_profiles (user_id, phone, location, website, social_links, preferences) VALUES (?, ?, ?, ?, ?, ?)',
-        [userId, phone || null, location || null, website || null, 
-         social_links ? JSON.stringify(social_links) : null,
-         preferences ? JSON.stringify(preferences) : null]
-      );
+  'INSERT INTO user_profiles (user_id, phone, city, country, website, social_links, preferences) VALUES (?, ?, ?, ?, ?, ?, ?)',
+  [userId, phone || null, city || null, country || null, website || null,
+   social_links ? JSON.stringify(social_links) : null,
+   preferences ? JSON.stringify(preferences) : null]
+);
     } else {
       // Update existing profile
       const updateFields = [];
@@ -153,11 +157,14 @@ router.put('/', authenticateToken, updateProfileValidation, async (req, res) => 
         updateValues.push(phone);
       }
 
-      if (location !== undefined) {
-        updateFields.push('location = ?');
-        updateValues.push(location);
-      }
-
+      if (city !== undefined) {
+  updateFields.push('city = ?');
+  updateValues.push(city);
+}
+if (country !== undefined) {
+  updateFields.push('country = ?');
+  updateValues.push(country);
+}
       if (website !== undefined) {
         updateFields.push('website = ?');
         updateValues.push(website);
@@ -190,7 +197,8 @@ router.put('/', authenticateToken, updateProfileValidation, async (req, res) => 
         up.id,
         up.user_id,
         up.phone,
-        up.location,
+        up.city,
+        up.country,
         up.website,
         up.social_links,
         up.preferences,
@@ -220,8 +228,8 @@ router.put('/', authenticateToken, updateProfileValidation, async (req, res) => 
 
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error' 
+    res.status(500).json({
+      error: 'Internal server error'
     });
   }
 });
@@ -237,7 +245,8 @@ router.get('/:userId', async (req, res) => {
     const [profiles] = await pool.execute(`
       SELECT 
         up.bio,
-        up.location,
+        up.city,
+        up.country,
         up.website,
         up.social_links,
         up.created_at,
@@ -250,8 +259,8 @@ router.get('/:userId', async (req, res) => {
     `, [userId]);
 
     if (profiles.length === 0) {
-      return res.status(404).json({ 
-        error: 'Profile not found' 
+      return res.status(404).json({
+        error: 'Profile not found'
       });
     }
 
@@ -261,8 +270,8 @@ router.get('/:userId', async (req, res) => {
 
   } catch (error) {
     console.error('Get public profile error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error' 
+    res.status(500).json({
+      error: 'Internal server error'
     });
   }
 });

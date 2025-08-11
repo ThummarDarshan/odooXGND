@@ -32,7 +32,8 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
     lastName: profile?.last_name || "Doe",
     email: profile?.email || "john@example.com",
     phone: profile?.phone || "",
-    location: profile?.location || ""
+    city: profile?.city || "",
+    country: profile?.country || ""
   });
   const { toast } = useToast();
   const router = useRouter();
@@ -73,7 +74,8 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
           setProfileData((prev) => ({
             ...prev,
             phone: data.profile?.phone || "",
-            location: data.profile?.location || ""
+            city: data.profile?.city || "",
+            country: data.profile?.country || ""
           }));
           setAvatarUrl(data.profile?.avatar || '');
         }
@@ -125,7 +127,8 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
         },
         body: JSON.stringify({
           phone: profileData.phone,
-          location: profileData.location
+          city: profileData.city,
+          country: profileData.country
         })
       });
       if (!profileRes.ok) {
@@ -354,16 +357,26 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
                     className="rounded-lg"
                       />
                     </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="location" className="text-slate-700 dark:text-slate-200">Location</Label>
-                      <Input
-                        id="location"
-                        value={profileData.location}
-                        onChange={(e) => setProfileData({...profileData, location: e.target.value})}
-                        disabled={!isEditing}
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="text-slate-700 dark:text-slate-200">City</Label>
+                  <Input
+                    id="city"
+                    value={profileData.city}
+                    onChange={(e) => setProfileData({...profileData, city: e.target.value})}
+                    disabled={!isEditing}
                     className="rounded-lg"
-                      />
-                    </div>
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="country" className="text-slate-700 dark:text-slate-200">country</Label>
+                  <Input
+                    id="country"
+                    value={profileData.country}
+                    onChange={(e) => setProfileData({...profileData, country: e.target.value})}
+                    disabled={!isEditing}
+                    className="rounded-lg"
+                  />
+                </div>
               </div>
             </div>
               </div>
