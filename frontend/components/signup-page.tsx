@@ -94,17 +94,16 @@ export function SignupPage() {
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8 animate-in fade-in-0 slide-in-from-top-4 duration-1000">
-            <div className="flex items-center justify-center mb-6">
-              <div className="relative">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl">
-                  <span className="text-white font-bold text-2xl">N</span>
+            <div className="flex flex-col items-center justify-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 animate-pulse opacity-20"></div>
                 </div>
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 animate-pulse opacity-20"></div>
+                <a href="/" className="hover:opacity-80 transition-opacity duration-300">
+                  <Logo size="lg" />
+                </a>
               </div>
             </div>
-                          <a href="/" className="hover:opacity-80 transition-opacity duration-300">
-                <Logo size="lg" />
-              </a>
             <p className="text-muted-foreground dark:text-slate-400 mt-2">Create your account and start building amazing things.</p>
           </div>
 
@@ -164,6 +163,65 @@ export function SignupPage() {
                 </div>
 
                 <div>
+                  <Label htmlFor="phone" className="text-slate-700 dark:text-slate-100 font-medium">
+                    Phone Number
+                  </Label>
+                  <div className="relative mt-2">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="Enter your phone number"
+                      className="pl-10 bg-background dark:bg-slate-800 border-border dark:border-slate-700 text-foreground 
+                 dark:text-slate-100 placeholder:text-muted-foreground dark:placeholder:text-slate-400 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex space-x-2">
+                  <div className="flex-1">
+                    <Label htmlFor="city" className="text-slate-700 dark:text-slate-100 font-medium">
+                      City
+                    </Label>
+                    <div className="relative mt-2">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                      <Input
+                        id="city"
+                        name="city"
+                        type="text"
+                        placeholder="Enter your city"
+                        className="pl-10 bg-background dark:bg-slate-800 border-border dark:border-slate-700 text-foreground 
+                   dark:text-slate-100 placeholder:text-muted-foreground dark:placeholder:text-slate-400 
+                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <Label htmlFor="country" className="text-slate-700 dark:text-slate-100 font-medium">
+                      Country
+                    </Label>
+                    <div className="relative mt-2">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                      <Input
+                        id="country"
+                        name="country"
+                        type="text"
+                        placeholder="Enter your country"
+                        className="pl-10 bg-background dark:bg-slate-800 border-border dark:border-slate-700 text-foreground 
+                   dark:text-slate-100 placeholder:text-muted-foreground dark:placeholder:text-slate-400 
+                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+
+                <div>
                   <Label htmlFor="password" className="text-slate-700 dark:text-slate-100 font-medium">
                     Password
                   </Label>
@@ -194,15 +252,14 @@ export function SignupPage() {
                         {[1, 2, 3, 4, 5].map((level) => (
                           <div
                             key={level}
-                            className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                              level <= passwordStrength
-                                ? passwordStrength <= 2
-                                  ? "bg-red-500"
-                                  : passwordStrength <= 3
-                                    ? "bg-yellow-500"
-                                    : "bg-green-500"
-                                : "bg-slate-200"
-                            }`}
+                            className={`h-1 flex-1 rounded-full transition-all duration-300 ${level <= passwordStrength
+                              ? passwordStrength <= 2
+                                ? "bg-red-500"
+                                : passwordStrength <= 3
+                                  ? "bg-yellow-500"
+                                  : "bg-green-500"
+                              : "bg-slate-200"
+                              }`}
                           />
                         ))}
                       </div>

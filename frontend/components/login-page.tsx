@@ -29,17 +29,17 @@ export function LoginPage() {
       const url = new URL(window.location.href);
       const token = url.searchParams.get('token');
       const error = url.searchParams.get('error');
-      
+
       if (token) {
         localStorage.setItem('token', token);
         // Optionally, fetch user info here using the token
         router.push('/');
       }
-      
+
       // Handle OAuth errors
       if (error) {
         let errorMessage = 'An error occurred during authentication.';
-        
+
         switch (error) {
           case 'github_oauth_error':
             errorMessage = 'GitHub OAuth authentication failed. Please try again or use email/password login.';
@@ -56,13 +56,13 @@ export function LoginPage() {
           default:
             errorMessage = 'Authentication failed. Please try again.';
         }
-        
+
         toast({
           title: "Authentication Error",
           description: errorMessage,
           variant: "destructive"
         });
-        
+
         // Clear the error from URL
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.delete('error');
@@ -121,7 +121,7 @@ export function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Reactivation request failed");
-      
+
       toast({
         title: "Reactivation request submitted",
         description: "An administrator will review your request and notify you.",
@@ -162,17 +162,16 @@ export function LoginPage() {
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8 animate-in fade-in-0 slide-in-from-top-4 duration-1000">
-            <div className="flex items-center justify-center mb-6">
-              <div className="relative">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl">
-                  <span className="text-white font-bold text-2xl">G</span>
+            <div className="flex flex-col items-center justify-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 animate-pulse opacity-20"></div>
                 </div>
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 animate-pulse opacity-20"></div>
+                <a href="/" className="hover:opacity-80 transition-opacity duration-300">
+                  <Logo size="lg" />
+                </a>
               </div>
             </div>
-                          <a href="/" className="hover:opacity-80 transition-opacity duration-300">
-                <Logo size="lg" />
-              </a>
             <p className="text-muted-foreground dark:text-slate-400 mt-2">Welcome back! Please sign in to your account.</p>
           </div>
 
