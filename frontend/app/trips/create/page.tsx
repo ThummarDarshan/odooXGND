@@ -29,6 +29,7 @@ export default function CreateTripPage() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [budget, setBudget] = useState("");
 
   const suggestions = [
     { id: 1, title: "Eiffel Tower", subtitle: "Paris • Landmark", image: "/placeholder.jpg" },
@@ -61,6 +62,7 @@ export default function CreateTripPage() {
     if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
       newErrors.endDate = "End date cannot be before start date.";
     }
+    if (!budget) newErrors.budget = "Budget is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -84,6 +86,7 @@ export default function CreateTripPage() {
       formData.append("start_date", startDate);
       formData.append("end_date", endDate);
       formData.append("description", description);
+      formData.append("budget", budget);
       if (coverFile) formData.append("cover", coverFile);
 
       const res = await fetch("http://localhost:5001/api/trips", {
@@ -100,7 +103,8 @@ export default function CreateTripPage() {
 
       const data = await res.json();
       toast({ title: "Trip created!", description: `Trip \"${data.name || tripName}\" has been created.` });
-      router.push("/profile");
+      // Redirect to itinerary builder with trip id and name
+      router.push(`/trips/itinerary-builder?tripId=${data.id}&tripName=${encodeURIComponent(data.name || tripName)}`);
     } catch (err: any) {
       toast({ title: "Error", description: err?.message || "Failed to create trip" });
     } finally {
@@ -160,6 +164,11 @@ export default function CreateTripPage() {
                     </SelectContent>
                   </Select>
                   {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="budget" className="flex items-center gap-2">💰 Budget</Label>
+                  <Input id="budget" type="number" min="0" step="0.01" value={budget} onChange={e => setBudget(e.target.value)} placeholder="e.g., 5000" />
+                  {errors.budget && <p className="text-red-500 text-xs mt-1">{errors.budget}</p>}
                 </div>
               </div>
 

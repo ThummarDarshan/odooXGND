@@ -37,16 +37,16 @@ router.post('/', authenticateToken, upload.single('cover'), async (req, res) => 
   Object.entries(req.body).forEach(([key, value]) => {
     console.log(`Field: ${key}, Value: ${value}, Type: ${typeof value}`);
   });
-  const { name, location, start_date, end_date, description, cost } = req.body;
+  const { name, location, start_date, end_date, description, budget } = req.body;
   const user_id = req.user.id; // Get user id from token
   if (!name || !location || !start_date || !end_date) {
     return res.status(400).json({ error: 'Missing required fields', received: req.body });
   }
   const cover = req.file ? '/uploads/trip-covers/' + req.file.filename : null;
-  const sql = `INSERT INTO trips (user_id, name, location, start_date, end_date, description, cover, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO trips (user_id, name, location, start_date, end_date, description, cover, budget) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
   try {
-    const [result] = await pool.query(sql, [user_id, name, location, start_date, end_date, description, cover, cost || 0]);
-    res.status(201).json({ id: result.insertId, name, location, start_date, end_date, description, cover, cost: cost || 0 });
+    const [result] = await pool.query(sql, [user_id, name, location, start_date, end_date, description, cover, budget || null]);
+    res.status(201).json({ id: result.insertId, name, location, start_date, end_date, description, cover, budget: budget || null });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -76,10 +76,10 @@ router.get('/:id', async (req, res) => {
 
 // Update a trip (basic, no file upload)
 router.put('/:id', async (req, res) => {
-  const { name, location, start_date, end_date, description, cost } = req.body;
+  const { name, location, start_date, end_date, description, budget } = req.body;
   try {
-    await pool.query('UPDATE trips SET name=?, location=?, start_date=?, end_date=?, description=?, cost=? WHERE id=?',
-      [name, location, start_date, end_date, description, cost, req.params.id]
+    await pool.query('UPDATE trips SET name=?, location=?, start_date=?, end_date=?, description=?, budget=? WHERE id=?',
+      [name, location, start_date, end_date, description, budget, req.params.id]
     );
     res.json({ success: true });
   } catch (err) {

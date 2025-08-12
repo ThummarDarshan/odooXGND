@@ -8,7 +8,8 @@ import Select from "react-select";
 import { Navigation } from "@/components/navigation";
 import { useItineraryStore } from "@/store/itineraryStore";
 import { createItinerary, saveItineraryDraft } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const cityOptions = [
     { value: "Delhi", label: "Delhi" },
@@ -33,19 +34,23 @@ const cityOptions = [
 ];
 
 const ItineraryBuilderPage = () => {
+    const searchParams = useSearchParams();
+    const tripId = searchParams.get("tripId");
+    const tripName = searchParams.get("tripName");
     const stops = useItineraryStore((s) => s.stops);
     const setStops = useItineraryStore((s) => s.setStops);
     const [adding, setAdding] = useState(false);
     const [newCity, setNewCity] = useState<any>(null);
     const [newStart, setNewStart] = useState("");
     const [newEnd, setNewEnd] = useState("");
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState(tripName || "");
     const [description, setDescription] = useState("");
     const [information, setInformation] = useState("");
     const [userId] = useState(1); // Replace with actual user id from auth
     const [itineraryId, setItineraryId] = useState<number | null>(null);
     const [saving, setSaving] = useState(false);
     const router = useRouter();
+    const { toast } = useToast();
 
     // Add Stop Inline
     const handleAddStop = (e: React.FormEvent) => {
@@ -113,34 +118,37 @@ const ItineraryBuilderPage = () => {
     const handleSaveDraft = async () => {
         setSaving(true);
         try {
-            if (itineraryId) {
-                await saveItineraryDraft({
-                    user_id: userId,
-                    title,
-                    description,
-                    start_date: stops[0]?.startDate.toISOString().slice(0, 10) || "",
-                    end_date: stops[stops.length - 1]?.endDate.toISOString().slice(0, 10) || "",
-                    stops,
-                    cost: totalCost,
-                    information,
-                    itineraryId,
-                });
-            } else {
+            let currentItineraryId = itineraryId;
+            // If no itineraryId, create first
+            if (!currentItineraryId) {
                 const res = await createItinerary({
                     user_id: userId,
-                    title,
+                    title: title || tripName || "Untitled Trip",
                     description,
-                    start_date: stops[0]?.startDate.toISOString().slice(0, 10) || "",
-                    end_date: stops[stops.length - 1]?.endDate.toISOString().slice(0, 10) || "",
+                    start_date: stops[0]?.startDate?.toISOString().slice(0, 10) || "",
+                    end_date: stops[stops.length - 1]?.endDate?.toISOString().slice(0, 10) || "",
                     stops,
                     cost: totalCost,
                     information,
                 });
+                currentItineraryId = res.id;
                 setItineraryId(res.id);
             }
-            alert("Draft saved!");
+            // Now PATCH (update) the draft
+            await saveItineraryDraft({
+                user_id: userId,
+                title: title || tripName || "Untitled Trip",
+                description,
+                start_date: stops[0]?.startDate?.toISOString().slice(0, 10) || "",
+                end_date: stops[stops.length - 1]?.endDate?.toISOString().slice(0, 10) || "",
+                stops,
+                cost: totalCost,
+                information,
+                itineraryId: Number(currentItineraryId),
+            });
+            toast({ title: "Draft saved!", description: "Your itinerary draft was saved successfully.", variant: "default" });
         } catch (e) {
-            alert("Failed to save draft");
+            toast({ title: "Failed to save draft", description: "There was an error saving your itinerary. Please try again.", variant: "destructive" });
         } finally {
             setSaving(false);
         }
@@ -152,7 +160,7 @@ const ItineraryBuilderPage = () => {
             <Navigation />
             {/* Header */}
             <header className="flex items-center justify-between px-6 py-4 border-b bg-white">
-                <h1 className="text-2xl font-bold">Build Your Trip</h1>
+                <h1 className="text-2xl font-bold">{title || tripName || "Build Your Trip"}</h1>
                 <button
                     className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
                     onClick={handleSaveDraft}

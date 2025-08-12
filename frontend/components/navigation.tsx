@@ -148,10 +148,10 @@ export function Navigation() {
               </button>
               <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-50">
                 <a
-                  href="/trips/itinerary-builder"
+                  href="/trips/create"
                   className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-t-lg"
                 >
-                  Build Itinerary
+                  Plan Trip
                 </a>
                 <a
                   href="/trips/itinerary-view"
@@ -281,11 +281,11 @@ export function Navigation() {
                         Itinerary
                       </div>
                       <a
-                        href="/trips/itinerary-builder"
+                        href="/trips/create"
                         className="px-6 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 border-b border-gray-100"
                         onClick={() => setIsOpen(false)}
                       >
-                        Build Itinerary
+                        Plan Trip
                       </a>
                       <a
                         href="/trips/itinerary-view"

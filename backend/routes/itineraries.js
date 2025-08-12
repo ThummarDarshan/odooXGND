@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { pool } = require('../config/database');
 
 // Build (Create) Itinerary
 router.post('/', async (req, res) => {
   try {
     const { user_id, title, description, start_date, end_date, destinations, activities, cost, information } = req.body;
-    const [result] = await db.execute(
+    // If destinations is an array of stops, store the full stops array
+    const destinationsToStore = Array.isArray(destinations) && destinations[0]?.startDate ? destinations : [];
+    const [result] = await pool.execute(
       'INSERT INTO itineraries (user_id, title, description, start_date, end_date, destinations, activities, cost, information) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [user_id, title, description, start_date, end_date, JSON.stringify(destinations), JSON.stringify(activities), cost || 0, information || null]
+      [user_id, title, description, start_date, end_date, JSON.stringify(destinationsToStore), JSON.stringify(activities), cost || 0, information || null]
     );
     res.status(201).json({ id: result.insertId, message: 'Itinerary created successfully' });
   } catch (error) {
@@ -20,7 +22,7 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   try {
     const { cost, information } = req.body;
-    const [result] = await db.execute(
+    const [result] = await pool.execute(
       'UPDATE itineraries SET cost = ?, information = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
       [cost, information, req.params.id]
     );
@@ -36,7 +38,7 @@ router.patch('/:id', async (req, res) => {
 // View (Get) Itinerary by ID
 router.get('/:id', async (req, res) => {
   try {
-    const [rows] = await db.execute('SELECT * FROM itineraries WHERE id = ?', [req.params.id]);
+    const [rows] = await pool.execute('SELECT * FROM itineraries WHERE id = ?', [req.params.id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
@@ -52,7 +54,7 @@ router.get('/:id', async (req, res) => {
 // Get all itineraries
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await db.execute('SELECT * FROM itineraries');
+    const [rows] = await pool.execute('SELECT * FROM itineraries');
     // Parse destinations and activities for each itinerary
     const itineraries = rows.map(itinerary => ({
       ...itinerary,

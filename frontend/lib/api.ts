@@ -42,6 +42,14 @@ export async function apiRequest(
   // Add default headers
   headers['Content-Type'] = 'application/json';
 
+  // Debug: Log request details
+  console.log('API Request:', {
+    url: `${API_BASE_URL}${endpoint}`,
+    method,
+    headers,
+    body,
+  });
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -55,8 +63,10 @@ export async function apiRequest(
 
     clearTimeout(timeoutId);
 
-    // Safely parse JSON or return empty object
+    // Debug: Log response status and text
+    console.log('API Response:', response.status, response.statusText);
     const text = await response.text();
+    console.log('API Response Body:', text);
     const data = text ? JSON.parse(text) : {};
 
     if (!response.ok) {
@@ -150,13 +160,14 @@ export async function createItinerary({
   cost: number;
   information?: string;
 }) {
+  // Send the full stops array as destinations
   return api.post("/itineraries", {
     user_id,
     title,
     description,
     start_date,
     end_date,
-    destinations: stops.map((s) => s.city),
+    destinations: stops, // full stops array with start/end date for each stop
     activities: stops.map((s) => s.activities),
     cost,
     information,

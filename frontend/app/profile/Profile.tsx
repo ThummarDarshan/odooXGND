@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import Cropper from 'react-easy-crop';
 import { useCallback } from 'react';
 
-const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHistory?: any[] }) => {
+const Profile = ({ profile, activityHistory = [], preplannedTrips = [], previousTrips = [] }: { profile?: any, activityHistory?: any[], preplannedTrips?: any[], previousTrips?: any[] }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     firstName: profile?.first_name || "John",
@@ -47,19 +47,6 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
-
-  // Mock trip data - replace with real data from your backend
-  const [preplannedTrips] = useState([
-    { id: 1, title: "Paris Adventure", date: "2024-06-15", destination: "Paris, France" },
-    { id: 2, title: "Tokyo Exploration", date: "2024-07-20", destination: "Tokyo, Japan" },
-    { id: 3, title: "New York City", date: "2024-08-10", destination: "New York, USA" }
-  ]);
-
-  const [previousTrips] = useState([
-    { id: 1, title: "London Trip", date: "2024-03-15", destination: "London, UK" },
-    { id: 2, title: "Rome Vacation", date: "2024-02-20", destination: "Rome, Italy" },
-    { id: 3, title: "Barcelona Holiday", date: "2024-01-10", destination: "Barcelona, Spain" }
-  ]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -388,31 +375,52 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
             Preplanned Trips
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {preplannedTrips.map((trip) => (
-              <Card key={trip.id} className="bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-shadow">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <Plane className="h-5 w-5 text-blue-500" />
-                    {trip.title}
-                </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-400">
-                    {trip.destination}
-                  </CardDescription>
-              </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4">
+            {preplannedTrips.length === 0 ? (
+              <div className="text-center text-slate-400 col-span-full">No preplanned trips.</div>
+            ) : preplannedTrips.map((trip) => (
+              <Card
+                key={trip.id}
+                className="overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col h-full"
+              >
+                <div className="aspect-video bg-slate-200 dark:bg-slate-700">
+                  {trip.cover ? (
+                    <img
+                      src={trip.cover.startsWith('http') ? trip.cover : `http://localhost:5001${trip.cover}`}
+                      alt={trip.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : null}
+                </div>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl">{trip.name}</CardTitle>
+                  <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {trip.date}
-                        </div>
-                  <Button className="w-full" variant="outline">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View
-                  </Button>
-              </CardContent>
-            </Card>
+                    {new Date(trip.start_date).toLocaleDateString()} — {new Date(trip.end_date).toLocaleDateString()}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <MapPin className="h-4 w-4" />
+                    <span>{trip.destinations?.length ?? 0} destinations</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-400 mt-2">
+                    <span>Updated {trip.updated_at ? new Date(trip.updated_at).toLocaleString() : "never"}</span>
+                  </div>
+                  <div className="mt-auto pt-4 flex items-center justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.location.href = `/trips/${trip.id}`}
+                      className="flex items-center gap-2"
+                    >
+                      <Eye className="h-4 w-4" /> View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
-                      </div>
-                    </div>
+          </div>
+        </div>
 
         {/* Previous Trips Section */}
         <div className="mb-8">
@@ -420,26 +428,47 @@ const Profile = ({ profile, activityHistory = [] }: { profile?: any, activityHis
             Previous Trips
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {previousTrips.map((trip) => (
-              <Card key={trip.id} className="bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-shadow">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <Plane className="h-5 w-5 text-green-500" />
-                    {trip.title}
-                  </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-400">
-                    {trip.destination}
+            {previousTrips.length === 0 ? (
+              <div className="text-center text-slate-400 col-span-full">No previous trips.</div>
+            ) : previousTrips.map((trip) => (
+              <Card
+                key={trip.id}
+                className="overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col h-full"
+              >
+                <div className="aspect-video bg-slate-200 dark:bg-slate-700">
+                  {trip.cover ? (
+                    <img
+                      src={trip.cover.startsWith('http') ? trip.cover : `http://localhost:5001${trip.cover}`}
+                      alt={trip.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : null}
+                </div>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl">{trip.name}</CardTitle>
+                  <CardDescription className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    {new Date(trip.start_date).toLocaleDateString()} — {new Date(trip.end_date).toLocaleDateString()}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4">
-                    <Calendar className="h-4 w-4" />
-                    {trip.date}
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <MapPin className="h-4 w-4" />
+                    <span>{trip.destinations?.length ?? 0} destinations</span>
                   </div>
-                  <Button className="w-full" variant="outline">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View
-                        </Button>
+                  <div className="flex items-center gap-2 text-xs text-slate-400 mt-2">
+                    <span>Updated {trip.updated_at ? new Date(trip.updated_at).toLocaleString() : "never"}</span>
+                  </div>
+                  <div className="mt-auto pt-4 flex items-center justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.location.href = `/trips/${trip.id}`}
+                      className="flex items-center gap-2"
+                    >
+                      <Eye className="h-4 w-4" /> View
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}

@@ -1,0 +1,52 @@
+.custom-sx-calendar .sx__calendar {
+  border-radius: 1.5rem !important;
+  box-shadow: 0 8px 32px 0 rgba(30,64,175,0.10), 0 2px 8px 0 rgba(30,64,175,0.06);
+  border: none !important;
+  background: #fff !important;
+  padding: 2.5rem 2rem !important;
+  font-family: var(--font-sans, 'Geist Sans', 'Inter', 'sans-serif');
+}
+.custom-sx-calendar .sx__calendar-header {
+  background: transparent !important;
+  border-bottom: 1.5px solid #e0e7ef !important;
+  padding-bottom: 1.2rem !important;
+  margin-bottom: 1.2rem !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+.custom-sx-calendar .sx__calendar-toolbar {
+  gap: 1.2rem !important;
+}
+.custom-sx-calendar .sx__calendar-cell {
+  border-radius: 1rem !important;
+  transition: background 0.2s, box-shadow 0.2s;
+  font-size: 1.05rem;
+  font-family: var(--font-sans, 'Geist Sans', 'Inter', 'sans-serif');
+  color: #334155;
+}
+.custom-sx-calendar .sx__calendar-cell--selected, .custom-sx-calendar .sx__calendar-cell--today {
+  background: linear-gradient(90deg, #2563eb 60%, #a21caf 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px 0 rgba(30,64,175,0.10);
+}
+.custom-sx-calendar .sx__calendar-cell--range {
+  background: #dbeafe !important;
+  color: #2563eb !important;
+}
+.custom-sx-calendar .sx__calendar-event {
+  border-radius: 0.75rem !important;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.35rem 0.7rem !important;
+  background: linear-gradient(90deg, #f472b6 0%, #60a5fa 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 1px 4px 0 rgba(30,64,175,0.10);
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .custom-sx-calendar .sx__calendar {
+    padding: 0.7rem !important;
+  }
+}

@@ -9,6 +9,7 @@
    --------------------------------------------------------------------------*/
 
 /* 1 ▸ Tailwind import (required by build system) */
+@import '@schedule-x/theme-default/dist/index.css';
 @import "tailwindcss";
 @import "tw-animate-css";
 

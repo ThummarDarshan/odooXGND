@@ -2,16 +2,18 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Profile from './Profile';
+import { apiRequest } from "@/lib/api";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [activityHistory, setActivityHistory] = useState([]);
+  const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchProfileAndActivity = async () => {
+    const fetchProfileAndTrips = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -31,6 +33,14 @@ export default function ProfilePage() {
         }
         const data = await res.json();
         setProfile(data.user);
+        // Fetch trips
+        const userId = data.user?.id;
+        let tripsData = [];
+        if (userId) {
+          const tripRes = await apiRequest(`/trips/user/${userId}`);
+          tripsData = Array.isArray(tripRes.trips) ? tripRes.trips : tripRes;
+        }
+        setTrips(tripsData);
         // Fetch activity history (notifications)
         const notifRes = await fetch("http://localhost:5001/api/notifications?limit=20", {
           headers: { Authorization: `Bearer ${token}` },
@@ -52,7 +62,7 @@ export default function ProfilePage() {
         setLoading(false);
       }
     };
-    fetchProfileAndActivity();
+    fetchProfileAndTrips();
   }, [toast]);
 
   if (loading) {
@@ -75,7 +85,8 @@ export default function ProfilePage() {
             onClick={() => {
               setError(null);
               setLoading(true);
-              fetchProfileAndActivity();
+              // re-fetch
+              window.location.reload();
             }} 
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
@@ -86,5 +97,10 @@ export default function ProfilePage() {
     );
   }
 
-  return <Profile profile={profile} activityHistory={activityHistory} />;
-} 
+  // Split trips into preplanned (future) and previous (past)
+  const now = new Date();
+  const preplannedTrips = trips.filter((trip: any) => new Date(trip.start_date) > now);
+  const previousTrips = trips.filter((trip: any) => new Date(trip.end_date) < now);
+
+  return <Profile profile={profile} activityHistory={activityHistory} preplannedTrips={preplannedTrips} previousTrips={previousTrips} />;
+}
